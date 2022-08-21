@@ -1,5 +1,14 @@
 package jc.draft.utility.app
 
-fun main(args: Array<String>) {
-    InputProcessor().handleInput()
+import jc.draft.utility.app.processor.ContextProcessor
+import jc.draft.utility.app.utility.AppContext
+
+
+fun main() {
+    val context = AppContext()
+    val processor = ContextProcessor()
+
+    while (!context.shouldExit) {
+        processor.process(context)
+    }
 }
