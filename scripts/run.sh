@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -jar app/build/libs/app-standalone.jar
+java -jar cli-app/build/libs/cli-app-standalone.jar

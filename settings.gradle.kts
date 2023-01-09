@@ -1,2 +1,2 @@
 rootProject.name = "jc-draft-utility"
-include("app")
+include("cli-app", "utility", "api-app")
