@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/api-app" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/cli-app" />
+            <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/utility" />
           </set>
         </option>

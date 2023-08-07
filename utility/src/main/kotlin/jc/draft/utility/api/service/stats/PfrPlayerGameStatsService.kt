@@ -82,10 +82,14 @@ class PfrPlayerDocument(pfrId: String, private val year: Int) {
     }
     
     private fun getIntData(el: Element, statName: String): Int {
-        return getDataStat(el, statName)?.toInt() ?: 0
+        return getDataStat(el, statName).emptyToNull()?.toInt() ?: 0
     }
 
     private fun getDataStat(el: Element, statName: String): String? {
         return el.selectFirst("td[data-stat=$statName]")?.text()
     }
+}
+
+fun String?.emptyToNull(): String? {
+    return if (this.isNullOrEmpty()) null else this
 }

@@ -11,7 +11,7 @@ val PFR_IDS = listOf(KYLE)
 
 fun main() {
     printPlayerGameStats()
-//    printPlayerMetadata()
+    printPlayerMetadata()
 }
 
 fun printPlayerGameStats() {

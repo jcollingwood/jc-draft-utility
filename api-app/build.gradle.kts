@@ -1,12 +1,9 @@
 val ktorVersion = "2.1.0"
 plugins {
     id("jc.draft.utility.kotlin-application-conventions")
-    application //to run JVM part
+//    application //to run JVM part
     kotlin("plugin.serialization") version "1.6.10"
-}
-
-repositories {
-    mavenCentral()
+//    kotlin("jvm") version "1.8.20"
 }
 
 dependencies {
@@ -20,6 +17,7 @@ dependencies {
     implementation("io.ktor:ktor-server-compression:$ktorVersion")
 
     implementation(project(":utility"))
+    implementation(kotlin("stdlib-jdk8"))
 
 }
 
@@ -27,3 +25,11 @@ application {
     // Define the main class for the application.
     mainClass.set("jc.draft.utility.app.ApiAppKt")
 }
+//val compileKotlin: KotlinCompile by tasks
+//compileKotlin.kotlinOptions {
+//    jvmTarget = "1.8"
+//}
+//val compileTestKotlin: KotlinCompile by tasks
+//compileTestKotlin.kotlinOptions {
+//    jvmTarget = "1.8"
+//}
