@@ -2,7 +2,7 @@ val ktorVersion = "2.1.0"
 plugins {
     id("jc.draft.utility.kotlin-application-conventions")
 //    application //to run JVM part
-    kotlin("plugin.serialization") version "1.6.10"
+    kotlin("plugin.serialization") version "2.0.20"
 //    kotlin("jvm") version "1.8.20"
 }
 
@@ -17,7 +17,7 @@ dependencies {
     implementation("io.ktor:ktor-server-compression:$ktorVersion")
 
     implementation(project(":utility"))
-    implementation(kotlin("stdlib-jdk8"))
+//    implementation(kotlin("stdlib-jdk8"))
 
 }
 

@@ -1,13 +1,14 @@
-import gradle.kotlin.dsl.accessors._e955592cfcca1783c48ac959ec339844.implementation
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.repositories
+plugins {
+    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
+    id("org.jetbrains.kotlin.jvm")
+}
 
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
 
-val exposedVersion = "0.40.1"
+val exposedVersion = "0.54.0"
 
 dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
