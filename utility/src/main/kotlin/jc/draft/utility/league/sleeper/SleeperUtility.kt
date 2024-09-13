@@ -30,9 +30,17 @@ fun getSleeperPlayers(): Map<String, SleeperPlayer>? {
     return jsonParser.decodeFromString<Map<String, SleeperPlayer>>(SleeperPlayersData().getData(SleeperConfig("1")))
 }
 
+/**
+ * Sleeper is public and readonly so no auth needed
+ */
 class SleeperPlayersData : CacheableData<SleeperConfig> {
     override fun directory(c: SleeperConfig): String {
         return "sleeper/players"
+    }
+
+    // this is a large set of data and should be retrieved at most once per day
+    override fun refreshDurationHours(): Long {
+        return 24
     }
 
     override fun refreshData(c: SleeperConfig): String {

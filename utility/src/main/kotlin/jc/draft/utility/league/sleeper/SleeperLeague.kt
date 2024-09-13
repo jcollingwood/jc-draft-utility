@@ -13,12 +13,16 @@ import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
 
-class SleeperFantasyPlatform : FantasyPlatform<SleeperPlayer> {
-    private val sleeperLeague = SleeperLeagueData()
-    private val sleeperPlayers = getSleeperPlayers()
-
+/**
+ * Sleeper is public and readonly so no auth needed
+ */
+class SleeperFantasyPlatform(
+    val leagues: List<LeagueConfig>,
+    private val sleeperLeague: CacheableData<LeagueConfig> = SleeperLeagueData(),
+    private val sleeperPlayers: Map<String, SleeperPlayer>? = getSleeperPlayers()
+) : FantasyPlatform<SleeperPlayer> {
     override fun getLeagues(): List<LeagueConfig> {
-        return listOf(ffbCardsLeague, famanticsLeague, bellmanLeague, ffbDynastyLeague)
+        return leagues
     }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
@@ -28,12 +32,14 @@ class SleeperFantasyPlatform : FantasyPlatform<SleeperPlayer> {
     override fun parsePlayersFromJson(json: String, teamId: String): List<SleeperPlayer> {
         return jsonParser.decodeFromString<List<SleeperLeagueRoster>>(json)
             .filter { teamId == it.owner_id }.first().players
+            // sleeper roster data only includes player ids, get player details from global player list
             .map { sleeperPlayers?.get(it) ?: SleeperPlayer() }
     }
 
     override fun mapToFantasyPlayer(player: SleeperPlayer): FantasyPlayer {
         return FantasyPlayer(
             fullName = player.first_name + " " + player.last_name,
+            // global player list shows Active for all player statuses... figure out
             status = player.status
         )
     }

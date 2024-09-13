@@ -11,11 +11,15 @@ val ramLeague = LeagueConfig(
     teamId = ""
 )
 
-class YahooFantasyPlatform : FantasyPlatform<String> {
-    val yahooLeague = YahooLeagueData()
-
+/**
+ * yahoo uses OAuth for authentication
+ */
+class YahooFantasyPlatform(
+    val leagues: List<LeagueConfig>,
+    private val yahooLeague: CacheableData<LeagueConfig> = YahooLeagueData()
+) : FantasyPlatform<String> {
     override fun getLeagues(): List<LeagueConfig> {
-        return listOf(ramLeague)
+        return leagues
     }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {

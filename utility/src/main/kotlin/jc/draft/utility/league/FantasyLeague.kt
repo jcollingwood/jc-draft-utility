@@ -24,7 +24,7 @@ interface FantasyPlatform<P> {
     fun parsePlayersFromJson(json: String, teamId: String): List<P>
     fun mapToFantasyPlayer(player: P): FantasyPlayer
 
-    fun getPlayers(): List<FantasyLeague> {
+    fun getLeaguePlayers(): List<FantasyLeague> {
         return getLeagues().map { league ->
             FantasyLeague(
                 league = league,

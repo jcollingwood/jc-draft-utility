@@ -11,11 +11,15 @@ import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
 
-class EspnFantasyPlatform : FantasyPlatform<EspnPlayer> {
-    val espnLeague = EspnLeagueData()
-
+/**
+ * ESPN uses cookies for authentication
+ */
+class EspnFantasyPlatform(
+    val leagues: List<LeagueConfig>,
+    private val espnLeague: CacheableData<LeagueConfig> = EspnLeagueData()
+) : FantasyPlatform<EspnPlayer> {
     override fun getLeagues(): List<LeagueConfig> {
-        return listOf(federationLeague, bfflLeague, clayLeague, workLeague)
+        return this.leagues
     }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
