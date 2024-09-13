@@ -14,6 +14,7 @@ interface CacheableData<C> {
     fun directory(c: C): String
 
     fun getData(c: C): String {
+        // TODO mechanism to force refresh of data
         val existingDataCache = getLatestFile(c)
 
         existingDataCache?.let { data ->
