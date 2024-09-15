@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 /**
  * Handles data caching and refresh with default 24 hour refresh duration
  *
- * Only required configuration when implementing is to provide the cache directory and the mechansim for refreshing the data
+ * Only required configuration when implementing is to provide the cache directory and the mechanism for refreshing the data
  */
 interface CacheableData<C> {
     fun directory(c: C): String
@@ -20,20 +20,29 @@ interface CacheableData<C> {
         existingDataCache?.let { data ->
             if (shouldRefresh(data)) {
                 println("refreshing data for $c")
-                return refreshAndPersistNewFile(c)
+                val refresh: (C) -> String = { c -> refreshData(c, data.readText()) }
+                return refreshAndPersistNewFile(refresh, c)
             } else {
                 return data.readText()
             }
         } ?: run {
             println("no existing data, retrieving new for $c")
-            return refreshAndPersistNewFile(c)
+            val refresh: (C) -> String = { c -> refreshDataFirstTime(c) }
+            return refreshAndPersistNewFile(refresh, c)
         }
     }
 
-    fun refreshData(c: C): String
+    /**
+     * optionally override behavior to fetch data for first time differently, defaults to normal fetch behavior
+     */
+    fun refreshDataFirstTime(c: C): String {
+        return refreshData(c)
+    }
 
-    fun refreshAndPersistNewFile(c: C): String {
-        val data = refreshData(c)
+    fun refreshData(c: C, existingData: String = ""): String
+
+    fun refreshAndPersistNewFile(refreshFunc: (C) -> String, c: C): String {
+        val data = refreshFunc(c)
         File("${dataDirectory(c)}/${LocalDateTime.now().format(fileNameDateFormatter)}.json").writeText(
             data
         )

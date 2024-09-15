@@ -21,7 +21,7 @@ data class FantasyLeague(
 interface FantasyPlatform<P> {
     fun getLeagues(): List<LeagueConfig>
     fun getLeagueDataService(): CacheableData<LeagueConfig>
-    fun parsePlayersFromJson(json: String, teamId: String): List<P>
+    fun parsePlayersFromPayload(payload: String, teamId: String): List<P>
     fun mapToFantasyPlayer(player: P): FantasyPlayer
 
     fun getLeaguePlayers(): List<FantasyLeague> {
@@ -34,6 +34,6 @@ interface FantasyPlatform<P> {
     }
 
     fun retrieveLeagueRoster(leagueConfig: LeagueConfig): List<P>? {
-        return parsePlayersFromJson(getLeagueDataService().getData(leagueConfig), leagueConfig.teamId)
+        return parsePlayersFromPayload(getLeagueDataService().getData(leagueConfig), leagueConfig.teamId)
     }
 }

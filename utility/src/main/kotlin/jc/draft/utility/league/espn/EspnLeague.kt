@@ -15,19 +15,19 @@ import kotlinx.coroutines.runBlocking
  * ESPN uses cookies for authentication
  */
 class EspnFantasyPlatform(
-    val leagues: List<LeagueConfig>,
+    val leagueConfigs: List<LeagueConfig>,
     private val espnLeague: CacheableData<LeagueConfig> = EspnLeagueData()
 ) : FantasyPlatform<EspnPlayer> {
     override fun getLeagues(): List<LeagueConfig> {
-        return this.leagues
+        return this.leagueConfigs
     }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
         return espnLeague
     }
 
-    override fun parsePlayersFromJson(json: String, teamId: String): List<EspnPlayer> {
-        return jsonParser.decodeFromString<EspnResponse>(json)
+    override fun parsePlayersFromPayload(payload: String, teamId: String): List<EspnPlayer> {
+        return jsonParser.decodeFromString<EspnResponse>(payload)
             .teams.filter { it.id.toString() == teamId }
             .first().roster?.entries?.map { it.playerPoolEntry?.player }?.filterNotNull() ?: emptyList()
     }
@@ -60,7 +60,7 @@ class EspnLeagueData : CacheableData<LeagueConfig> {
     }
 
     /* make api call to retrieve league roster data */
-    override fun refreshData(c: LeagueConfig): String {
+    override fun refreshData(c: LeagueConfig, existingData: String): String {
         return runBlocking {
             val response: HttpResponse = client.request(getLeagueUrl(c)) {
                 method = HttpMethod.Get

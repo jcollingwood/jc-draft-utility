@@ -6,13 +6,16 @@ plugins {
 
 //val ktorVersion: String by project
 val ktorVersion = "2.3.12"
+val myndocsOauthVersion = "0.7.1"
 
 dependencies {
     implementation(project(":data"))
     implementation("org.jsoup:jsoup:1.14.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.2")
+
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth:$ktorVersion")
 }
 
 tasks.named<JavaExec>("run") {
