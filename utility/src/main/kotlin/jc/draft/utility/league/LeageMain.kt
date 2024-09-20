@@ -19,7 +19,13 @@ fun main() {
         SleeperFantasyPlatform(leagueConfigs = listOf(ffbCardsLeague, famanticsLeague, bellmanLeague, ffbDynastyLeague))
     val yahooPlatform = YahooFantasyPlatform(leagueConfigs = listOf(ramLeague))
 
-    val fantasyLeaguePlayers = listOf(espnPlatform, sleeperPlatform)
+    val fantasyPlatforms = listOf(
+        espnPlatform,
+        sleeperPlatform,
+        yahooPlatform
+    )
+
+    val fantasyLeaguePlayers = fantasyPlatforms
         .map { platform -> platform.getLeaguePlayers() }
         .flatten()
 

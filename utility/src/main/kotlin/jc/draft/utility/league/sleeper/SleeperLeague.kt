@@ -61,7 +61,12 @@ class SleeperLeagueData : CacheableData<LeagueConfig> {
             }
             when (response.status) {
                 HttpStatusCode.OK -> println("successfully retrieved league roster data")
-                else -> println("failed to retrieve league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}")
+                else -> {
+                    val errorMessage =
+                        "failed to retrieve league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}"
+                    println(errorMessage)
+                    throw RuntimeException(errorMessage)
+                }
             }
             return@runBlocking response.bodyAsText()
         }

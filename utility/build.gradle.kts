@@ -6,12 +6,15 @@ plugins {
 
 //val ktorVersion: String by project
 val ktorVersion = "2.3.12"
-val myndocsOauthVersion = "0.7.1"
 
 dependencies {
     implementation(project(":data"))
     implementation("org.jsoup:jsoup:1.14.3")
+
+    // serialization plugins
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.2")
 
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")

@@ -1,9 +1,9 @@
 package jc.draft.utility.league.yahoo
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.bearer
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.request.headers
 import io.ktor.client.request.request
 import io.ktor.client.statement.HttpResponse
@@ -15,23 +15,22 @@ import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
+import jc.draft.utility.league.LeaguePlatform
 import jc.draft.utility.league.client
 import kotlinx.coroutines.runBlocking
 
-val yahooClient = HttpClient(CIO) {
-    install(Auth) {
-        bearer {
-            loadTokens { null }
-            refreshTokens { null }
-        }
-    }
-}
-
 val ramLeague = LeagueConfig(
+    leaguePlatform = LeaguePlatform.YAHOO,
     leagueName = "Ram",
-    leagueId = "",
-    teamId = ""
+    leagueId = "426660",
+    teamId = "3"
 )
+
+// jackson xml mapper config for kotlin
+val xmlDeserializer = XmlMapper(JacksonXmlModule()
+    .apply { setDefaultUseWrapper(false) })
+    .registerKotlinModule()
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
 /**
  * yahoo uses OAuth for authentication
@@ -44,6 +43,7 @@ class YahooFantasyPlatform(
     private val yahooLeague: CacheableData<LeagueConfig> = YahooLeagueData(yahooAuthService = YahooAuthService())
 ) : FantasyPlatform<String> {
     override fun getLeagues(): List<LeagueConfig> {
+        println(leagueConfigs)
         return leagueConfigs
     }
 
@@ -55,19 +55,29 @@ class YahooFantasyPlatform(
         payload: String,
         teamId: String
     ): List<String> {
-        TODO("Not yet implemented")
+//        println(payload)
+        val yahooRoster = xmlDeserializer.readValue(payload, YahooFantasyContent::class.java)
+        println(yahooRoster)
+        return listOf()
     }
 
     override fun mapToFantasyPlayer(player: String): FantasyPlayer {
-        TODO("Not yet implemented")
+        return FantasyPlayer(
+            fullName = player,
+            status = "Active"
+        )
     }
 }
 
 class YahooLeagueData(
     private val yahooAuthService: YahooAuthService
 ) : CacheableData<LeagueConfig> {
+    private fun constructTeamKey(c: LeagueConfig): String {
+        return "nfl.l.${c.leagueId}.t.${c.teamId}"
+    }
+
     private fun getYahooUrl(c: LeagueConfig): String {
-        return "https://fantasysports.yahooapis.com/fantasy/v2/team/${c.teamId}"
+        return "https://fantasysports.yahooapis.com/fantasy/v2/team/${constructTeamKey(c)}"
     }
 
     override fun directory(c: LeagueConfig): String {
@@ -77,15 +87,23 @@ class YahooLeagueData(
     override fun refreshData(c: LeagueConfig, existingData: String): String {
         val accessToken = yahooAuthService.getYahooAccessToken().accessToken
         return runBlocking {
-            val response: HttpResponse = client.request("${getYahooUrl(c)}/roster") {
+            val url = "${getYahooUrl(c)}/roster"
+            println("url: $url")
+            val response: HttpResponse = client.request(url) {
                 method = HttpMethod.Get
                 headers {
                     append(HttpHeaders.Accept, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $accessToken")
                 }
             }
             when (response.status) {
                 HttpStatusCode.OK -> println("successfully retrieved yahoo league roster data")
-                else -> println("failed to retrieve yahoo league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}")
+                else -> {
+                    val errorMessage =
+                        "failed to retrieve yahoo league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}"
+                    println(errorMessage)
+                    throw RuntimeException(errorMessage)
+                }
             }
             return@runBlocking response.bodyAsText()
         }

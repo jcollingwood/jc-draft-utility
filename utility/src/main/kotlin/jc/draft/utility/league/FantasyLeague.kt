@@ -1,6 +1,13 @@
 package jc.draft.utility.league
 
+enum class LeaguePlatform {
+    ESPN,
+    SLEEPER,
+    YAHOO
+}
+
 data class LeagueConfig(
+    val leaguePlatform: LeaguePlatform,
     val leagueName: String,
     val leagueId: String,
     val year: Int = 2024,
@@ -34,6 +41,11 @@ interface FantasyPlatform<P> {
     }
 
     fun retrieveLeagueRoster(leagueConfig: LeagueConfig): List<P>? {
-        return parsePlayersFromPayload(getLeagueDataService().getData(leagueConfig), leagueConfig.teamId)
+        try {
+            return parsePlayersFromPayload(getLeagueDataService().getData(leagueConfig), leagueConfig.teamId)
+        } catch (e: Exception) {
+            println(e)
+            return emptyList()
+        }
     }
 }
