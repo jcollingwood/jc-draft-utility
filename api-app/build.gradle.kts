@@ -1,10 +1,9 @@
-val ktorVersion = "2.1.0"
 plugins {
     id("jc.draft.utility.kotlin-application-conventions")
-//    application //to run JVM part
     kotlin("plugin.serialization") version "2.0.20"
-//    kotlin("jvm") version "1.8.20"
 }
+
+val ktorVersion = "2.1.0"
 
 dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
@@ -16,20 +15,15 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-compression:$ktorVersion")
 
+    // html/css dsl
+    implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
+    implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.810")
+
     implementation(project(":utility"))
-//    implementation(kotlin("stdlib-jdk8"))
 
 }
 
 application {
     // Define the main class for the application.
-    mainClass.set("jc.draft.utility.app.ApiAppKt")
+    mainClass.set("jc.draft.utility.api.DraftUtilityServerKt")
 }
-//val compileKotlin: KotlinCompile by tasks
-//compileKotlin.kotlinOptions {
-//    jvmTarget = "1.8"
-//}
-//val compileTestKotlin: KotlinCompile by tasks
-//compileTestKotlin.kotlinOptions {
-//    jvmTarget = "1.8"
-//}
