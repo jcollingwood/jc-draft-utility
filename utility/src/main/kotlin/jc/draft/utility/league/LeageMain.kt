@@ -14,12 +14,18 @@ import jc.draft.utility.league.yahoo.YahooFantasyPlatform
 import jc.draft.utility.league.yahoo.ramLeague
 
 fun main() {
-    val espnPlatform = EspnFantasyPlatform(leagues = listOf(federationLeague, bfflLeague, clayLeague, workLeague))
+    val espnPlatform = EspnFantasyPlatform(leagueConfigs = listOf(federationLeague, bfflLeague, clayLeague, workLeague))
     val sleeperPlatform =
-        SleeperFantasyPlatform(leagues = listOf(ffbCardsLeague, famanticsLeague, bellmanLeague, ffbDynastyLeague))
-    val yahooPlatform = YahooFantasyPlatform(leagues = listOf(ramLeague))
+        SleeperFantasyPlatform(leagueConfigs = listOf(ffbCardsLeague, famanticsLeague, bellmanLeague, ffbDynastyLeague))
+    val yahooPlatform = YahooFantasyPlatform(leagueConfigs = listOf(ramLeague))
 
-    val fantasyLeaguePlayers = listOf(yahooPlatform)
+    val fantasyPlatforms = listOf(
+        espnPlatform,
+        sleeperPlatform,
+        yahooPlatform
+    )
+
+    val fantasyLeaguePlayers = fantasyPlatforms
         .map { platform -> platform.getLeaguePlayers() }
         .flatten()
 

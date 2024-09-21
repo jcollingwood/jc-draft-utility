@@ -5,13 +5,20 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.LocalDateTime
 
+enum class CacheDataType(val extension: String) {
+    JSON(".json"), XML(".xml"), TXT(".txt")
+}
+
 /**
  * Handles data caching and refresh with default 24 hour refresh duration
  *
- * Only required configuration when implementing is to provide the cache directory and the mechansim for refreshing the data
+ * Only required configuration when implementing is to provide the cache directory and the mechanism for refreshing the data
  */
 interface CacheableData<C> {
     fun directory(c: C): String
+    fun dataType(): CacheDataType {
+        return CacheDataType.TXT
+    }
 
     fun getData(c: C): String {
         // TODO mechanism to force refresh of data
@@ -20,21 +27,34 @@ interface CacheableData<C> {
         existingDataCache?.let { data ->
             if (shouldRefresh(data)) {
                 println("refreshing data for $c")
-                return refreshAndPersistNewFile(c)
+                val refresh: (C) -> String = { c -> refreshData(c, data.readText()) }
+                return refreshAndPersistNewFile(refresh, c)
             } else {
                 return data.readText()
             }
         } ?: run {
             println("no existing data, retrieving new for $c")
-            return refreshAndPersistNewFile(c)
+            val refresh: (C) -> String = { c -> refreshDataFirstTime(c) }
+            return refreshAndPersistNewFile(refresh, c)
         }
     }
 
-    fun refreshData(c: C): String
+    /**
+     * optionally override behavior to fetch data for first time differently, defaults to normal fetch behavior
+     */
+    fun refreshDataFirstTime(c: C): String {
+        return refreshData(c)
+    }
 
-    fun refreshAndPersistNewFile(c: C): String {
-        val data = refreshData(c)
-        File("${dataDirectory(c)}/${LocalDateTime.now().format(fileNameDateFormatter)}.json").writeText(
+    fun refreshData(c: C, existingData: String = ""): String
+
+    fun refreshAndPersistNewFile(refreshFunc: (C) -> String, c: C): String {
+        val data = refreshFunc(c)
+        File(
+            "${dataDirectory(c)}/${
+                LocalDateTime.now().format(fileNameDateFormatter)
+            }${dataType().extension}"
+        ).writeText(
             data
         )
         return data
@@ -45,9 +65,9 @@ interface CacheableData<C> {
     }
 
     fun shouldRefresh(file: File?): Boolean {
-        if (file == null) return true
+        if (file == null || !file.name.contains(dataType().extension)) return true
         // expected file name format to be date time of format YYYYmmddHHmmss, check against configured refresh duration
-        val fileName = file.name.replace(".json", "")
+        val fileName = file.name.replace(dataType().extension, "")
 
         if (fileName.length != FILE_NAME_DATE_FORMAT.length) println("invalid file name: ${file.name}")
         val fileNameDate = LocalDateTime.parse(fileName, fileNameDateFormatter)

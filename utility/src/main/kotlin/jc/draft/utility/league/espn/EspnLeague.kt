@@ -3,6 +3,7 @@ package jc.draft.utility.league.espn
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import jc.draft.utility.league.CacheDataType
 import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
@@ -15,19 +16,19 @@ import kotlinx.coroutines.runBlocking
  * ESPN uses cookies for authentication
  */
 class EspnFantasyPlatform(
-    val leagues: List<LeagueConfig>,
+    val leagueConfigs: List<LeagueConfig>,
     private val espnLeague: CacheableData<LeagueConfig> = EspnLeagueData()
 ) : FantasyPlatform<EspnPlayer> {
     override fun getLeagues(): List<LeagueConfig> {
-        return this.leagues
+        return this.leagueConfigs
     }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
         return espnLeague
     }
 
-    override fun parsePlayersFromJson(json: String, teamId: String): List<EspnPlayer> {
-        return jsonParser.decodeFromString<EspnResponse>(json)
+    override fun parsePlayersFromPayload(payload: String, teamId: String): List<EspnPlayer> {
+        return jsonParser.decodeFromString<EspnResponse>(payload)
             .teams.filter { it.id.toString() == teamId }
             .first().roster?.entries?.map { it.playerPoolEntry?.player }?.filterNotNull() ?: emptyList()
     }
@@ -59,8 +60,12 @@ class EspnLeagueData : CacheableData<LeagueConfig> {
         return "${c.year}_${c.leagueName}_${c.leagueId}"
     }
 
+    override fun dataType(): CacheDataType {
+        return CacheDataType.JSON
+    }
+
     /* make api call to retrieve league roster data */
-    override fun refreshData(c: LeagueConfig): String {
+    override fun refreshData(c: LeagueConfig, existingData: String): String {
         return runBlocking {
             val response: HttpResponse = client.request(getLeagueUrl(c)) {
                 method = HttpMethod.Get
@@ -73,7 +78,12 @@ class EspnLeagueData : CacheableData<LeagueConfig> {
             }
             when (response.status) {
                 HttpStatusCode.OK -> println("successfully retrieved league roster data")
-                else -> println("failed to retrieve league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}")
+                else -> {
+                    val errorMessage =
+                        "failed to retrieve league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}"
+                    println(errorMessage)
+                    throw RuntimeException(errorMessage)
+                }
             }
             return@runBlocking response.bodyAsText()
         }
