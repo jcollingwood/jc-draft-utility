@@ -29,7 +29,7 @@ fun main() {
                         rostersBody()
                     }
                 }
-                get("/platform/{nam}") {
+                get("/platform/{name}") {
                     call.respondHtml {
                         println(call.parameters["name"])
                         body {
