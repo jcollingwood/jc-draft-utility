@@ -5,6 +5,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import jc.draft.utility.league.CacheDataType
 import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
@@ -14,7 +15,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SleeperPlayer(
-    val status: String? = null,
+    @SerialName("injury_status") val injuryStatus: String? = null,
     val active: Boolean? = null,
 //    val fantasy_positions: List<String> = emptyList(),
     val position: String? = null,
@@ -37,6 +38,10 @@ fun getSleeperPlayers(): Map<String, SleeperPlayer>? {
 class SleeperPlayersData : CacheableData<SleeperConfig> {
     override fun directory(c: SleeperConfig): String {
         return "sleeper/players"
+    }
+
+    override fun dataType(): CacheDataType {
+        return CacheDataType.JSON
     }
 
     // this is a large set of data and should be retrieved at most once per day

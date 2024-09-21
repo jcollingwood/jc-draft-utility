@@ -12,6 +12,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.headers
 import io.ktor.util.InternalAPI
+import jc.draft.utility.league.CacheDataType
 import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
@@ -53,6 +54,10 @@ class YahooAuthService : CacheableData<YahooAuthConfig> {
 
     override fun directory(c: YahooAuthConfig): String {
         return "yahoo/oauth/${c.yahooClientId}"
+    }
+
+    override fun dataType(): CacheDataType {
+        return CacheDataType.JSON
     }
 
     // access token only valid for 1 hour

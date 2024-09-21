@@ -5,7 +5,9 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.LocalDateTime
 
-val CACHE_FILE_TYPE = ".txt"
+enum class CacheDataType(val extension: String) {
+    JSON(".json"), XML(".xml"), TXT(".txt")
+}
 
 /**
  * Handles data caching and refresh with default 24 hour refresh duration
@@ -14,6 +16,9 @@ val CACHE_FILE_TYPE = ".txt"
  */
 interface CacheableData<C> {
     fun directory(c: C): String
+    fun dataType(): CacheDataType {
+        return CacheDataType.TXT
+    }
 
     fun getData(c: C): String {
         // TODO mechanism to force refresh of data
@@ -45,7 +50,11 @@ interface CacheableData<C> {
 
     fun refreshAndPersistNewFile(refreshFunc: (C) -> String, c: C): String {
         val data = refreshFunc(c)
-        File("${dataDirectory(c)}/${LocalDateTime.now().format(fileNameDateFormatter)}$CACHE_FILE_TYPE").writeText(
+        File(
+            "${dataDirectory(c)}/${
+                LocalDateTime.now().format(fileNameDateFormatter)
+            }${dataType().extension}"
+        ).writeText(
             data
         )
         return data
@@ -56,9 +65,9 @@ interface CacheableData<C> {
     }
 
     fun shouldRefresh(file: File?): Boolean {
-        if (file == null || !file.name.contains(CACHE_FILE_TYPE)) return true
+        if (file == null || !file.name.contains(dataType().extension)) return true
         // expected file name format to be date time of format YYYYmmddHHmmss, check against configured refresh duration
-        val fileName = file.name.replace(CACHE_FILE_TYPE, "")
+        val fileName = file.name.replace(dataType().extension, "")
 
         if (fileName.length != FILE_NAME_DATE_FORMAT.length) println("invalid file name: ${file.name}")
         val fileNameDate = LocalDateTime.parse(fileName, fileNameDateFormatter)

@@ -3,6 +3,7 @@ package jc.draft.utility.league.espn
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import jc.draft.utility.league.CacheDataType
 import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
@@ -57,6 +58,10 @@ class EspnLeagueData : CacheableData<LeagueConfig> {
 
     override fun directory(c: LeagueConfig): String {
         return "${c.year}_${c.leagueName}_${c.leagueId}"
+    }
+
+    override fun dataType(): CacheDataType {
+        return CacheDataType.JSON
     }
 
     /* make api call to retrieve league roster data */

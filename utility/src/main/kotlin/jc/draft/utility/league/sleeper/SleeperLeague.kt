@@ -5,6 +5,7 @@ import io.ktor.client.statement.*
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.http.HttpMethod
+import jc.draft.utility.league.CacheDataType
 import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
@@ -40,7 +41,7 @@ class SleeperFantasyPlatform(
         return FantasyPlayer(
             fullName = player.firstName + " " + player.lastName,
             // global player list shows Active for all player statuses... figure out
-            status = player.status
+            status = player.injuryStatus
         )
     }
 }
@@ -52,6 +53,10 @@ class SleeperLeagueData : CacheableData<LeagueConfig> {
 
     override fun directory(c: LeagueConfig): String {
         return "${c.year}_${c.leagueName}_${c.leagueId}"
+    }
+
+    override fun dataType(): CacheDataType {
+        return CacheDataType.JSON
     }
 
     override fun refreshData(c: LeagueConfig, existingData: String): String {

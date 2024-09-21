@@ -11,6 +11,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import jc.draft.utility.league.CacheDataType
 import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
@@ -41,7 +42,7 @@ val xmlDeserializer = XmlMapper(JacksonXmlModule()
 class YahooFantasyPlatform(
     val leagueConfigs: List<LeagueConfig>,
     private val yahooLeague: CacheableData<LeagueConfig> = YahooLeagueData(yahooAuthService = YahooAuthService())
-) : FantasyPlatform<String> {
+) : FantasyPlatform<YahooPlayer> {
     override fun getLeagues(): List<LeagueConfig> {
         println(leagueConfigs)
         return leagueConfigs
@@ -54,17 +55,15 @@ class YahooFantasyPlatform(
     override fun parsePlayersFromPayload(
         payload: String,
         teamId: String
-    ): List<String> {
-//        println(payload)
+    ): List<YahooPlayer> {
         val yahooRoster = xmlDeserializer.readValue(payload, YahooFantasyContent::class.java)
-        println(yahooRoster)
-        return listOf()
+        return yahooRoster.team.roster.players
     }
 
-    override fun mapToFantasyPlayer(player: String): FantasyPlayer {
+    override fun mapToFantasyPlayer(player: YahooPlayer): FantasyPlayer {
         return FantasyPlayer(
-            fullName = player,
-            status = "Active"
+            fullName = player.name.full,
+            status = player.status
         )
     }
 }
@@ -82,6 +81,10 @@ class YahooLeagueData(
 
     override fun directory(c: LeagueConfig): String {
         return "${c.year}_${c.leagueName}_${c.leagueId}"
+    }
+
+    override fun dataType(): CacheDataType {
+        return CacheDataType.XML
     }
 
     override fun refreshData(c: LeagueConfig, existingData: String): String {

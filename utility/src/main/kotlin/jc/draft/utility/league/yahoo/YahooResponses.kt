@@ -1,6 +1,7 @@
 package jc.draft.utility.league.yahoo
 
-import kotlinx.serialization.SerialName
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import kotlinx.serialization.Serializable
 
 
@@ -11,16 +12,16 @@ data class YahooFantasyContent(val team: YahooTeam)
 data class YahooTeam(val roster: YahooRoster)
 
 @Serializable
-data class YahooRoster(val players: List<YahooPlayerWrapper>)
-
-@Serializable
-data class YahooPlayerWrapper(val player: YahooPlayer)
+data class YahooRoster(
+    @JacksonXmlElementWrapper val players: List<YahooPlayer>
+)
 
 @Serializable
 data class YahooPlayer(
-    @SerialName("player_key") val playerKey: String? = null,
-    val name: YahooPlayerName? = null,
-    @SerialName("primary_position") val primaryPosition: String? = null
+    @JacksonXmlProperty(localName = "player_key") val playerKey: String? = null,
+    val name: YahooPlayerName,
+    @JacksonXmlProperty(localName = "primary_position") val primaryPosition: String? = null,
+    val status: String? = null
 )
 
 @Serializable
