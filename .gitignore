@@ -6,3 +6,6 @@ build
 
 # Ignore Gradle cache directory
 .data_cache
+
+# auto-generated static dir
+api-app/src/static

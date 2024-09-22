@@ -10,6 +10,7 @@ import kotlinx.html.h2
 import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.section
+import kotlinx.html.span
 import kotlinx.html.ul
 
 fun FlowContent.rostersBody(): Unit {
@@ -18,11 +19,13 @@ fun FlowContent.rostersBody(): Unit {
     }
     val leagueNames = fantasyLeagues.map { it.leagueName }
     div {
+        classes = setOf("flex", "flex-row", "overflow-scroll")
         leagueNames.map {
             section {
+                classes = setOf("flex", "flex-col")
                 hxTrigger("load")
                 hxGet("/rosters/leagues/$it")
-                hxSwap("outerHTML")
+                hxSwap("innerHTML")
             }
         }
     }
@@ -33,20 +36,25 @@ fun FlowContent.leagueSection(leagueName: String) {
     leagueConfig?.let { league ->
         val leaguePlayers = fantasyPlatformFactory(league.leaguePlatform).getLeaguePlayers(league)
 
-        h2 { +league.leagueName }
+        h2 {
+            classes = setOf("text-bold")
+            +league.leagueName
+        }
         ul {
+            classes = setOf("list-none")
 
             leaguePlayers.players.map { player ->
                 val status = player.status ?: "Active"
-                println(player)
                 if (status == "Active")
                     li { p { +player.fullName } }
                 else
                     li {
                         div {
-                            p { +"${player.fullName} " }
-                            p {
-                                classes = setOf("bad")
+                            classes = setOf("flex", "flex-row")
+                            span { +"${player.fullName} " }
+                            span {
+                                classes = setOf("text-red")
+
                                 +status
                             }
                         }
