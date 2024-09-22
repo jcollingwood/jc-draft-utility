@@ -4,6 +4,7 @@ import jc.draft.utility.league.fantasyLeagues
 import jc.draft.utility.league.fantasyPlatformFactory
 import kotlinx.html.FlowContent
 import kotlinx.html.classes
+import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.li
@@ -16,11 +17,13 @@ fun FlowContent.rostersBody(): Unit {
         +"fantasy rosters"
     }
     val leagueNames = fantasyLeagues.map { it.leagueName }
-    leagueNames.map {
-        section {
-            hxTrigger("load")
-            hxGet("/rosters/leagues/$it")
-            hxSwap("outerHTML")
+    div {
+        leagueNames.map {
+            section {
+                hxTrigger("load")
+                hxGet("/rosters/leagues/$it")
+                hxSwap("outerHTML")
+            }
         }
     }
 }
@@ -30,20 +33,22 @@ fun FlowContent.leagueSection(leagueName: String) {
     leagueConfig?.let { league ->
         val leaguePlayers = fantasyPlatformFactory(league.leaguePlatform).getLeaguePlayers(league)
 
-        h2 { league.leagueName }
+        h2 { +league.leagueName }
         ul {
 
             leaguePlayers.players.map { player ->
                 val status = player.status ?: "Active"
                 println(player)
                 if (status == "Active")
-                    li { player.fullName }
+                    li { p { +player.fullName } }
                 else
                     li {
-                        p { "${player.fullName} " }
-                        p {
-                            classes = setOf("bad")
-                            +status
+                        div {
+                            p { +"${player.fullName} " }
+                            p {
+                                classes = setOf("bad")
+                                +status
+                            }
                         }
                     }
             }

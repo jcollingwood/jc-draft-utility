@@ -86,7 +86,6 @@ class YahooLeagueData(
         val accessToken = yahooAuthService.getYahooAccessToken().accessToken
         return runBlocking {
             val url = "${getYahooUrl(c)}/roster"
-            println("url: $url")
             val response: HttpResponse = client.request(url) {
                 method = HttpMethod.Get
                 headers {
