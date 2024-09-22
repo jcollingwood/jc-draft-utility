@@ -1,37 +1,52 @@
 package jc.draft.utility.api
 
+import jc.draft.utility.league.fantasyLeagues
+import jc.draft.utility.league.fantasyPlatformFactory
 import kotlinx.html.FlowContent
-import kotlinx.html.HTML
-import kotlinx.html.body
 import kotlinx.html.classes
-import kotlinx.html.div
 import kotlinx.html.h1
+import kotlinx.html.h2
+import kotlinx.html.li
+import kotlinx.html.p
+import kotlinx.html.section
+import kotlinx.html.ul
 
-fun HTML.rostersBody(): Unit {
-    body {
-        h1 {
-            classes = setOf("title")
-            +"fantasy rosters"
-        }
-        div {
-            hxTrigger("load delay:1s")
-            hxGet("/rosters/platform/espn")
-        }
-        div {
-            hxTrigger("load delay:2s")
-            hxGet("/rosters/platform/sleeper")
-        }
-        div {
-            hxTrigger("load delay:3s")
-            hxGet("/rosters/platform/yahoo")
+fun FlowContent.rostersBody(): Unit {
+    h1 {
+        +"fantasy rosters"
+    }
+    val leagueNames = fantasyLeagues.map { it.leagueName }
+    leagueNames.map {
+        section {
+            hxTrigger("load")
+            hxGet("/rosters/leagues/$it")
+            hxSwap("outerHTML")
         }
     }
 }
 
-fun FlowContent.platformBody(platformName: String): Unit {
-    div {
-        h1 {
-            +"platform: $platformName"
+fun FlowContent.leagueSection(leagueName: String) {
+    val leagueConfig = fantasyLeagues.find { leagueName == it.leagueName }
+    leagueConfig?.let { league ->
+        val leaguePlayers = fantasyPlatformFactory(league.leaguePlatform).getLeaguePlayers(league)
+
+        h2 { league.leagueName }
+        ul {
+
+            leaguePlayers.players.map { player ->
+                val status = player.status ?: "Active"
+                println(player)
+                if (status == "Active")
+                    li { player.fullName }
+                else
+                    li {
+                        p { "${player.fullName} " }
+                        p {
+                            classes = setOf("bad")
+                            +status
+                        }
+                    }
+            }
         }
-    }
+    } ?: p("Invalid league name: $leagueName")
 }

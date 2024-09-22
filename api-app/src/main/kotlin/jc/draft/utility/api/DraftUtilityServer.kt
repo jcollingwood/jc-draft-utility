@@ -10,6 +10,8 @@ import io.ktor.server.routing.routing
 import kotlinx.html.body
 import kotlinx.html.head
 import kotlinx.html.link
+import kotlinx.html.main
+import kotlinx.html.p
 import kotlinx.html.script
 import kotlinx.html.title
 
@@ -26,14 +28,20 @@ fun main() {
                             link(rel = "stylesheet", href = "/styles.css", type = "text/css")
                             script { src = "https://unpkg.com/htmx.org@2.0.2" }
                         }
-                        rostersBody()
+                        body {
+                            main {
+                                rostersBody()
+                            }
+                        }
                     }
                 }
-                get("/platform/{name}") {
+                get("/leagues/{leagueName}") {
                     call.respondHtml {
-                        println(call.parameters["name"])
+                        val leagueName = call.parameters["leagueName"]
                         body {
-                            platformBody(call.parameters["name"] ?: "test")
+                            leagueName.also {
+                                leagueSection(it.toString())
+                            } ?: p("Invalid league name")
                         }
                     }
                 }

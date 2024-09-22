@@ -18,13 +18,9 @@ import kotlinx.coroutines.runBlocking
  * Sleeper is public and readonly so no auth needed
  */
 class SleeperFantasyPlatform(
-    val leagueConfigs: List<LeagueConfig>,
     private val sleeperLeague: CacheableData<LeagueConfig> = SleeperLeagueData(),
     private val sleeperPlayers: Map<String, SleeperPlayer>? = getSleeperPlayers()
 ) : FantasyPlatform<SleeperPlayer> {
-    override fun getLeagues(): List<LeagueConfig> {
-        return leagueConfigs
-    }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
         return sleeperLeague

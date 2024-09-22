@@ -40,13 +40,8 @@ val xmlDeserializer = XmlMapper(JacksonXmlModule()
  * https://api.login.yahoo.com/oauth2/request_auth\?client_id\=$YAHOO_FANTASY_CLIENT_ID\&response_type\=code\&redirect_uri\=https://jc-draft-utility.com
  */
 class YahooFantasyPlatform(
-    val leagueConfigs: List<LeagueConfig>,
     private val yahooLeague: CacheableData<LeagueConfig> = YahooLeagueData(yahooAuthService = YahooAuthService())
 ) : FantasyPlatform<YahooPlayer> {
-    override fun getLeagues(): List<LeagueConfig> {
-        println(leagueConfigs)
-        return leagueConfigs
-    }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
         return yahooLeague

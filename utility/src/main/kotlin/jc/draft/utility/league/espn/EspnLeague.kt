@@ -16,12 +16,8 @@ import kotlinx.coroutines.runBlocking
  * ESPN uses cookies for authentication
  */
 class EspnFantasyPlatform(
-    val leagueConfigs: List<LeagueConfig>,
     private val espnLeague: CacheableData<LeagueConfig> = EspnLeagueData()
 ) : FantasyPlatform<EspnPlayer> {
-    override fun getLeagues(): List<LeagueConfig> {
-        return this.leagueConfigs
-    }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
         return espnLeague
