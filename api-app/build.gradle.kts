@@ -28,20 +28,21 @@ dependencies {
 
     // html/css dsl
     implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
-    implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.810")
 }
 
-// need to set download=true unless you want to use locally installed node
 node {
+    // need to set download=true unless you want to use locally installed node
     download.set(true)
     version.set("22.9.0")
 }
 
+// tailwind task crawls source kt files and generates styles.css with necessary css classes
 tasks.register<NpxTask>("tailwind") {
     command.set("tailwindcss")
     args.addAll("-o", "src/main/resources/static/styles.css")
 }
 
+// runs tailwind task on build, regenerating styles.css
 tasks.named("classes") {
     dependsOn("tailwind")
 }
