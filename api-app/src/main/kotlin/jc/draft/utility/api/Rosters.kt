@@ -52,6 +52,7 @@ fun FlowContent.leagueSection(leagueName: String) {
                             classes = setOf("flex", "flex-row", "gap-2")
                             span { +"${player.fullName} " }
                             span {
+                                // TODO standardize statuses, atm workaround to gather all questionable just checks first letter
                                 val color = if (status.first() == 'Q') "text-orange-400" else "text-red-400"
                                 classes = setOf(color)
 

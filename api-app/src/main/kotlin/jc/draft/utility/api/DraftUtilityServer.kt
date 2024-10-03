@@ -31,12 +31,26 @@ fun main() {
                         head {
                             title { +"fantasy rosters" }
                             link(rel = "stylesheet", href = "/static/styles.css", type = "text/css")
+                            link(rel = "preconnect", href = "https://fonts.googleapis.com")
+                            link(rel = "preconnect", href = "https://fonts.gstatic.com")
+                            link(
+                                href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap",
+                                rel = "stylesheet"
+                            )
                             script { src = "https://unpkg.com/htmx.org@2.0.2" }
                         }
                         body {
                             main {
                                 classes =
-                                    setOf("flex", "flex-col", "h-screen", "w-screen", "items-center", "p-4")
+                                    setOf(
+                                        "font-inter",
+                                        "flex",
+                                        "flex-col",
+                                        "h-screen",
+                                        "w-screen",
+                                        "items-center",
+                                        "p-4"
+                                    )
                                 rostersBody()
                             }
                         }
