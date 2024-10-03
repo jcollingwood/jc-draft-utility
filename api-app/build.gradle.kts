@@ -35,16 +35,11 @@ dependencies {
 node {
     download.set(true)
     version.set("22.9.0")
-    nodeProjectDir.set(file("src"))
 }
 
 tasks.register<NpxTask>("tailwind") {
     command.set("tailwindcss")
-    args.addAll("-o", "static/styles.css")
-
-    inputs.dir("src")
-    inputs.files("tailwind.config.js")
-    outputs.files("static/styles.css")
+    args.addAll("-o", "src/main/resources/static/styles.css")
 }
 
 tasks.named("classes") {

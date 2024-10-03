@@ -23,7 +23,7 @@ fun main() {
     embeddedServer(Netty, 8081) {
         routing {
             // static directory route relative to project root dir
-            staticFiles("/static", File("api-app/src/static"))
+            staticFiles("/static", File("api-app/src/main/resources/static"))
 
             route("/rosters") {
                 get {
@@ -36,7 +36,7 @@ fun main() {
                         body {
                             main {
                                 classes =
-                                    setOf("flex", "flex-col", "h-screen", "w-screen", "items-center", "justify-center")
+                                    setOf("flex", "flex-col", "h-screen", "w-screen", "items-center", "p-4")
                                 rostersBody()
                             }
                         }

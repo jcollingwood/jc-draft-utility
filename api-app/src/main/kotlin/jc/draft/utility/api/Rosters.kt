@@ -15,11 +15,12 @@ import kotlinx.html.ul
 
 fun FlowContent.rostersBody(): Unit {
     h1 {
-        +"fantasy rosters"
+        classes = setOf("font-medium", "text-lg", "mb-4")
+        +"Fantasy Rosters"
     }
     val leagueNames = fantasyLeagues.map { it.leagueName }
     div {
-        classes = setOf("flex", "flex-row", "overflow-scroll")
+        classes = setOf("grid", "grid-cols-3", "gap-4")
         leagueNames.map {
             section {
                 classes = setOf("flex", "flex-col")
@@ -37,12 +38,10 @@ fun FlowContent.leagueSection(leagueName: String) {
         val leaguePlayers = fantasyPlatformFactory(league.leaguePlatform).getLeaguePlayers(league)
 
         h2 {
-            classes = setOf("text-bold")
+            classes = setOf("font-medium", "mb-4")
             +league.leagueName
         }
         ul {
-            classes = setOf("list-none")
-
             leaguePlayers.players.map { player ->
                 val status = player.status ?: "Active"
                 if (status == "Active")
@@ -50,10 +49,11 @@ fun FlowContent.leagueSection(leagueName: String) {
                 else
                     li {
                         div {
-                            classes = setOf("flex", "flex-row")
+                            classes = setOf("flex", "flex-row", "gap-2")
                             span { +"${player.fullName} " }
                             span {
-                                classes = setOf("text-red")
+                                val color = if (status.first() == 'Q') "text-orange-400" else "text-red-400"
+                                classes = setOf(color)
 
                                 +status
                             }

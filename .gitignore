@@ -8,4 +8,4 @@ build
 .data_cache
 
 # auto-generated static dir
-api-app/src/static
+api-app/src/main/resources/static/styles.css
