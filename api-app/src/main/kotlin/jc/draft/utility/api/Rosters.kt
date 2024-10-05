@@ -45,12 +45,12 @@ fun FlowContent.leagueSection(leagueName: String) {
             leaguePlayers.players.map { player ->
                 val status = player.status ?: "Active"
                 if (status == "Active")
-                    li { p { +player.fullName } }
+                    li { p { +"${if (player.isStarting) "*" else ""}${player.position} ${player.fullName}" } }
                 else
                     li {
                         div {
                             classes = setOf("flex", "flex-row", "gap-2")
-                            span { +"${player.fullName} " }
+                            span { +"${if (player.isStarting) "*" else ""}${player.position} ${player.fullName}" }
                             span {
                                 // TODO standardize statuses, atm workaround to gather all questionable just checks first letter
                                 val color = if (status.first() == 'Q') "text-orange-400" else "text-red-400"

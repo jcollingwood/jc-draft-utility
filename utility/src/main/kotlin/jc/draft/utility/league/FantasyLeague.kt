@@ -31,6 +31,17 @@ enum class LeaguePlatform {
     YAHOO
 }
 
+// order of enum will affect ordering of list
+enum class Position {
+    QB,
+    RB,
+    WR,
+    TE,
+    K,
+    DST,
+    UNKNOWN
+}
+
 fun fantasyPlatformFactory(leaguePlatform: LeaguePlatform): FantasyPlatform<*> {
     return when (leaguePlatform) {
         LeaguePlatform.ESPN -> EspnFantasyPlatform()
@@ -48,8 +59,9 @@ data class LeagueConfig(
 )
 
 data class FantasyPlayer(
+    val isStarting: Boolean = false,
     val fullName: String,
-    val position: String? = null,
+    val position: Position = Position.UNKNOWN,
     val status: String? = null
 )
 
@@ -66,7 +78,9 @@ interface FantasyPlatform<P> {
     fun getLeaguePlayers(leagueConfig: LeagueConfig): FantasyLeague {
         return FantasyLeague(
             league = leagueConfig,
-            players = retrieveLeagueRoster(leagueConfig)?.map(::mapToFantasyPlayer) ?: emptyList()
+            players = retrieveLeagueRoster(leagueConfig)?.map(::mapToFantasyPlayer)
+                // sort by starting first, then by position
+                ?.sortedWith(compareBy({ !it.isStarting }, { it.position })) ?: emptyList()
         )
     }
 

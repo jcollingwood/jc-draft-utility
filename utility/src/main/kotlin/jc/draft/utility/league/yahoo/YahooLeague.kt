@@ -57,7 +57,10 @@ class YahooFantasyPlatform(
 
     override fun mapToFantasyPlayer(player: YahooPlayer): FantasyPlayer {
         return FantasyPlayer(
+            // is starting if selected position isn't BN (bench) or IR
+            isStarting = !listOf("BN", "IR").contains(player.selectedPosition.position),
             fullName = player.name.full,
+            position = getYahooPosition(player.primaryPosition),
             status = player.status
         )
     }

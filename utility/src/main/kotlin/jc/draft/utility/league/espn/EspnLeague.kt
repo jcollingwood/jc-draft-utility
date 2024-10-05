@@ -31,7 +31,9 @@ class EspnFantasyPlatform(
 
     override fun mapToFantasyPlayer(player: EspnPlayer): FantasyPlayer {
         return FantasyPlayer(
+            isStarting = false,
             fullName = player.fullName,
+            position = getEspnPosition(player.defaultPositionId),
             status = player.injuryStatus?.lowercase()?.capitalize()
         )
     }

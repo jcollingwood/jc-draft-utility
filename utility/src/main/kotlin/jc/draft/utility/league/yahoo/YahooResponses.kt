@@ -21,7 +21,13 @@ data class YahooPlayer(
     @JacksonXmlProperty(localName = "player_key") val playerKey: String? = null,
     val name: YahooPlayerName,
     @JacksonXmlProperty(localName = "primary_position") val primaryPosition: String? = null,
-    val status: String? = null
+    val status: String? = null,
+    @JacksonXmlProperty(localName = "selected_position") val selectedPosition: YahooSelectedPosition
+)
+
+@Serializable
+data class YahooSelectedPosition(
+    @JacksonXmlProperty(localName = "position") val position: String
 )
 
 @Serializable

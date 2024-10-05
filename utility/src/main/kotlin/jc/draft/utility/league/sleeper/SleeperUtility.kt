@@ -7,6 +7,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import jc.draft.utility.league.CacheDataType
 import jc.draft.utility.league.CacheableData
+import jc.draft.utility.league.Position
 import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
@@ -23,8 +24,22 @@ data class SleeperPlayer(
     @SerialName("last_name") val lastName: String? = null,
     @SerialName("first_name") val firstName: String? = null,
     @SerialName("espn_id") val espnId: Int? = null,
-    @SerialName("yahoo_id") val yahoo_id: Int? = null
+    @SerialName("yahoo_id") val yahoo_id: Int? = null,
+    // is starting to be set by service, not part of retrieved data
+    var isStarting: Boolean = false
 )
+
+fun getSleeperPosition(position: String?): Position {
+    return when (position) {
+        "QB" -> Position.QB
+        "RB" -> Position.RB
+        "WR" -> Position.WR
+        "TE" -> Position.TE
+        "K" -> Position.K
+        "DEF" -> Position.DST
+        else -> Position.UNKNOWN
+    }
+}
 
 data class SleeperConfig(val id: String?)
 

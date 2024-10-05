@@ -27,15 +27,25 @@ class SleeperFantasyPlatform(
     }
 
     override fun parsePlayersFromPayload(payload: String, teamId: String): List<SleeperPlayer> {
-        return jsonParser.decodeFromString<List<SleeperLeagueRoster>>(payload)
-            .filter { teamId == it.ownerId }.first().players
-            // sleeper roster data only includes player ids, get player details from global player list
-            .map { sleeperPlayers?.get(it) ?: SleeperPlayer() }
+        val teamInfo = jsonParser.decodeFromString<List<SleeperLeagueRoster>>(payload)
+            .filter { teamId == it.ownerId }.first()
+        val starters = teamInfo.starters
+        val players = teamInfo.players
+        return players
+            .map { playerId ->
+                // sleeper roster data only includes player ids, get player details from global player list
+                val player = sleeperPlayers?.get(playerId) ?: SleeperPlayer()
+                // check if playerId is in starters list
+                player.isStarting = starters.contains(playerId)
+                player
+            }
     }
 
     override fun mapToFantasyPlayer(player: SleeperPlayer): FantasyPlayer {
         return FantasyPlayer(
+            isStarting = player.isStarting,
             fullName = player.firstName + " " + player.lastName,
+            position = getSleeperPosition(player.position),
             // global player list shows Active for all player statuses... figure out
             status = player.injuryStatus
         )

@@ -33,5 +33,10 @@ data class EspnEntry(val playerPoolEntry: EspnPlayerPoolEntry? = null)
 data class EspnPlayerPoolEntry(val player: EspnPlayer? = null)
 
 @Serializable
-data class EspnPlayer(val injured: Boolean? = false, val injuryStatus: String? = null, val fullName: String)
+data class EspnPlayer(
+    val injured: Boolean? = false,
+    val injuryStatus: String? = null,
+    val fullName: String,
+    val defaultPositionId: Integer
+)
 
