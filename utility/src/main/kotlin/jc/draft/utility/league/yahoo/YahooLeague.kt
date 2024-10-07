@@ -61,7 +61,7 @@ class YahooFantasyPlatform(
             isStarting = !listOf("BN", "IR").contains(player.selectedPosition.position),
             fullName = player.name.full,
             position = getYahooPosition(player.primaryPosition),
-            status = player.status
+            status = getYahooStatus(player.status)
         )
     }
 }

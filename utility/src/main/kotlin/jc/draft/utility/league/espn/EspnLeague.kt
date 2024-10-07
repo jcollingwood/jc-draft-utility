@@ -34,7 +34,7 @@ class EspnFantasyPlatform(
             isStarting = false,
             fullName = player.fullName,
             position = getEspnPosition(player.defaultPositionId),
-            status = player.injuryStatus?.lowercase()?.capitalize()
+            status = getEspnStatus(player.injuryStatus)
         )
     }
 }

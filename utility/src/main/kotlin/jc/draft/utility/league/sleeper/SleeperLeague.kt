@@ -19,8 +19,12 @@ import kotlinx.coroutines.runBlocking
  */
 class SleeperFantasyPlatform(
     private val sleeperLeague: CacheableData<LeagueConfig> = SleeperLeagueData(),
-    private val sleeperPlayers: Map<String, SleeperPlayer>? = getSleeperPlayers()
+    private var sleeperPlayers: Map<String, SleeperPlayer>? = getSleeperPlayers()
 ) : FantasyPlatform<SleeperPlayer> {
+
+    fun refetchSleeperPlayers() {
+        sleeperPlayers = getSleeperPlayers(true)
+    }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
         return sleeperLeague
@@ -47,7 +51,7 @@ class SleeperFantasyPlatform(
             fullName = player.firstName + " " + player.lastName,
             position = getSleeperPosition(player.position),
             // global player list shows Active for all player statuses... figure out
-            status = player.injuryStatus
+            status = getSleeperStatus(player.injuryStatus)
         )
     }
 }

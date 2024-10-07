@@ -30,13 +30,26 @@ fun main() {
                     call.respondHtml {
                         head {
                             title { +"fantasy rosters" }
+                            // tailwind css stylesheet
                             link(rel = "stylesheet", href = "/static/styles.css", type = "text/css")
+                            // google fonts + Inter font
                             link(rel = "preconnect", href = "https://fonts.googleapis.com")
                             link(rel = "preconnect", href = "https://fonts.gstatic.com")
                             link(
                                 href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap",
                                 rel = "stylesheet"
                             )
+                            // refresh mat icon
+                            link(
+                                rel = "stylesheet",
+                                href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0"
+                            )
+                            // system alt mat icon
+                            link(
+                                rel = "stylesheet",
+                                href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0"
+                            )
+                            // htmx dep
                             script { src = "https://unpkg.com/htmx.org@2.0.2" }
                         }
                         body {
@@ -57,11 +70,17 @@ fun main() {
                     }
                 }
                 get("/leagues/{leagueName}") {
+                    var refetchPlayers = call.request.queryParameters["refetchPlayers"]?.toBoolean() == true
+                    var fetchNew = call.request.queryParameters["fetchNew"]?.toBoolean() == true
                     call.respondHtml {
                         val leagueName = call.parameters["leagueName"]
                         body {
                             leagueName.also {
-                                leagueSection(it.toString())
+                                leagueSection(
+                                    leagueName = it.toString(),
+                                    fetchNew = fetchNew,
+                                    refetchPlayers = refetchPlayers
+                                )
                             } ?: p("Invalid league name")
                         }
                     }

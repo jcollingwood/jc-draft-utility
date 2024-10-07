@@ -20,9 +20,9 @@ interface CacheableData<C> {
         return CacheDataType.TXT
     }
 
-    fun getData(c: C): String {
+    fun getData(c: C, fetchNew: Boolean = false): String {
         // TODO mechanism to force refresh of data
-        val existingDataCache = getLatestFile(c)
+        val existingDataCache = if (fetchNew) null else getLatestFile(c)
 
         existingDataCache?.let { data ->
             if (shouldRefresh(data)) {
@@ -33,7 +33,10 @@ interface CacheableData<C> {
                 return data.readText()
             }
         } ?: run {
-            println("no existing data, retrieving new for $c")
+            if (fetchNew)
+                println("refetch of data explicitly requested for $c")
+            else
+                println("no existing data, retrieving new for $c")
             val refresh: (C) -> String = { c -> refreshDataFirstTime(c) }
             return refreshAndPersistNewFile(refresh, c)
         }

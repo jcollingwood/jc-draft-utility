@@ -12,7 +12,7 @@ fun main() {
         println("League: ${leaguePlayers.league.leagueName}")
         println("----------")
         leaguePlayers.players.forEach {
-            if (it.status == null || it.status == "Active")
+            if (it.status == Status.Active)
                 println(it.fullName)
             else
                 println("${it.fullName} : ${it.status}")

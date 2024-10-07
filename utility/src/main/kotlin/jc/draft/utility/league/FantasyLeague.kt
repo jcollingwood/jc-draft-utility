@@ -39,7 +39,17 @@ enum class Position {
     TE,
     K,
     DST,
-    UNKNOWN
+    Unknown
+}
+
+enum class Status(val displayValue: String) {
+    Active("Active"),
+    Questionable("Quest."),
+    Doubtful("Doubt."),
+    Out("Out"),
+    PUP("PUP"),
+    IR("IR"),
+    Unknown("Unknown")
 }
 
 fun fantasyPlatformFactory(leaguePlatform: LeaguePlatform): FantasyPlatform<*> {
@@ -61,8 +71,8 @@ data class LeagueConfig(
 data class FantasyPlayer(
     val isStarting: Boolean = false,
     val fullName: String,
-    val position: Position = Position.UNKNOWN,
-    val status: String? = null
+    val position: Position = Position.Unknown,
+    val status: Status = Status.Unknown
 )
 
 data class FantasyLeague(
@@ -75,18 +85,18 @@ interface FantasyPlatform<P> {
     fun parsePlayersFromPayload(payload: String, teamId: String): List<P>
     fun mapToFantasyPlayer(player: P): FantasyPlayer
 
-    fun getLeaguePlayers(leagueConfig: LeagueConfig): FantasyLeague {
+    fun getLeaguePlayers(leagueConfig: LeagueConfig, fetchNew: Boolean = false): FantasyLeague {
         return FantasyLeague(
             league = leagueConfig,
-            players = retrieveLeagueRoster(leagueConfig)?.map(::mapToFantasyPlayer)
+            players = retrieveLeagueRoster(leagueConfig, fetchNew)?.map(::mapToFantasyPlayer)
                 // sort by starting first, then by position
                 ?.sortedWith(compareBy({ !it.isStarting }, { it.position })) ?: emptyList()
         )
     }
 
-    fun retrieveLeagueRoster(leagueConfig: LeagueConfig): List<P>? {
+    fun retrieveLeagueRoster(leagueConfig: LeagueConfig, fetchNew: Boolean): List<P>? {
         try {
-            return parsePlayersFromPayload(getLeagueDataService().getData(leagueConfig), leagueConfig.teamId)
+            return parsePlayersFromPayload(getLeagueDataService().getData(leagueConfig, fetchNew), leagueConfig.teamId)
         } catch (e: Exception) {
             println(e)
             return emptyList()

@@ -8,6 +8,7 @@ import io.ktor.http.HttpStatusCode
 import jc.draft.utility.league.CacheDataType
 import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.Position
+import jc.draft.utility.league.Status
 import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
@@ -37,14 +38,30 @@ fun getSleeperPosition(position: String?): Position {
         "TE" -> Position.TE
         "K" -> Position.K
         "DEF" -> Position.DST
-        else -> Position.UNKNOWN
+        else -> Position.Unknown
+    }
+}
+
+fun getSleeperStatus(status: String?): Status {
+    return when (status) {
+        null -> Status.Active
+        "Questionable" -> Status.Questionable
+        "Out" -> Status.Out
+        "PUP" -> Status.PUP
+        "IR" -> Status.IR
+        else -> Status.Unknown
     }
 }
 
 data class SleeperConfig(val id: String?)
 
-fun getSleeperPlayers(): Map<String, SleeperPlayer>? {
-    return jsonParser.decodeFromString<Map<String, SleeperPlayer>>(SleeperPlayersData().getData(SleeperConfig("1")))
+fun getSleeperPlayers(fetchNew: Boolean = false): Map<String, SleeperPlayer>? {
+    return jsonParser.decodeFromString<Map<String, SleeperPlayer>>(
+        SleeperPlayersData().getData(
+            c = SleeperConfig("1"),
+            fetchNew = fetchNew
+        )
+    )
 }
 
 /**

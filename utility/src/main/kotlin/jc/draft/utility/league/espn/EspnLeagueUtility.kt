@@ -1,6 +1,7 @@
 package jc.draft.utility.league.espn
 
 import jc.draft.utility.league.Position
+import jc.draft.utility.league.Status
 
 fun getEspnPosition(position: Integer): Position {
     return when (position.toInt()) {
@@ -10,6 +11,19 @@ fun getEspnPosition(position: Integer): Position {
         4 -> Position.TE
         5 -> Position.K
         16 -> Position.DST
-        else -> Position.UNKNOWN
+        else -> Position.Unknown
+    }
+}
+
+fun getEspnStatus(status: String?): Status {
+    return when (status) {
+        null,
+        "ACTIVE" -> Status.Active
+
+        "QUESTIONABLE" -> Status.Questionable
+        "OUT" -> Status.Out
+        "PUP" -> Status.PUP
+        "IR" -> Status.IR
+        else -> Status.Unknown
     }
 }
