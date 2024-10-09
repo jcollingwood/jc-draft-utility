@@ -25,10 +25,10 @@ val fantasyLeagues = listOf(
     ramLeague
 )
 
-enum class LeaguePlatform {
-    ESPN,
-    SLEEPER,
-    YAHOO
+enum class LeaguePlatform(val displayValue: String) {
+    ESPN("Espn"),
+    SLEEPER("Sleeper"),
+    YAHOO("Yahoo")
 }
 
 // order of enum will affect ordering of list
