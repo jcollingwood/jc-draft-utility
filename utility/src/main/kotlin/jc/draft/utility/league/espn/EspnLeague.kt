@@ -8,6 +8,8 @@ import jc.draft.utility.league.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
+import jc.draft.utility.league.Position
+import jc.draft.utility.league.Status
 import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
@@ -17,21 +19,27 @@ import kotlinx.coroutines.runBlocking
  */
 class EspnFantasyPlatform(
     private val espnLeague: CacheableData<LeagueConfig> = EspnLeagueData()
-) : FantasyPlatform<EspnPlayer> {
+) : FantasyPlatform<EspnEntry> {
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
         return espnLeague
     }
 
-    override fun parsePlayersFromPayload(payload: String, teamId: String): List<EspnPlayer> {
+    override fun parsePlayersFromPayload(payload: String, teamId: String): List<EspnEntry> {
         return jsonParser.decodeFromString<EspnResponse>(payload)
             .teams.filter { it.id.toString() == teamId }
-            .first().roster?.entries?.map { it.playerPoolEntry?.player }?.filterNotNull() ?: emptyList()
+            .first().roster?.entries ?: emptyList()
     }
 
-    override fun mapToFantasyPlayer(player: EspnPlayer): FantasyPlayer {
-        return FantasyPlayer(
+    override fun mapToFantasyPlayer(playerEntry: EspnEntry): FantasyPlayer {
+        val player = playerEntry.playerPoolEntry?.player ?: return FantasyPlayer(
             isStarting = false,
+            fullName = "",
+            position = Position.Unknown,
+            status = Status.Unknown
+        )
+        return FantasyPlayer(
+            isStarting = playerEntry.lineupSlotId.toInt() != 20,
             fullName = player.fullName,
             position = getEspnPosition(player.defaultPositionId),
             status = getEspnStatus(player.injuryStatus)
