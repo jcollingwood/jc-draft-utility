@@ -76,9 +76,7 @@ fun FlowContent.leagueSectionHeader(league: LeagueConfig) {
     div {
         classes = setOf("flex", "flex-col")
         h2 {
-            classes = setOf(
-                "text-lg", "font-medium"
-            )
+            classes = setOf("text-lg", "font-medium")
             +league.leagueName
         }
         span {

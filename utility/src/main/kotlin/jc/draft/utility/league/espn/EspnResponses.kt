@@ -29,6 +29,7 @@ data class EspnRoster(val entries: List<EspnEntry> = emptyList())
 @Serializable
 data class EspnEntry(
     // 20 = bench
+    // 21 = IR
     // 23 = flex
     val lineupSlotId: Integer,
     val playerPoolEntry: EspnPlayerPoolEntry? = null

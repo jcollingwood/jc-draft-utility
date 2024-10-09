@@ -27,3 +27,7 @@ fun getEspnStatus(status: String?): Status {
         else -> Status.Unknown
     }
 }
+
+fun isStartingLineupSlotId(lineupSlotId: Integer): Boolean {
+    return !listOf(20, 21).contains(lineupSlotId.toInt())
+}

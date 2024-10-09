@@ -1,5 +1,6 @@
 package jc.draft.utility.api
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.html.respondHtml
@@ -36,13 +37,7 @@ fun main() {
                             main {
                                 classes =
                                     setOf(
-                                        "font-inter",
-                                        "flex",
-                                        "flex-col",
-                                        "h-screen",
-                                        "w-screen",
-                                        "items-center",
-                                        "p-4"
+                                        "font-inter", "flex", "flex-col", "h-screen", "w-screen", "items-center", "p-4"
                                     )
                                 rostersBody()
                             }
@@ -52,16 +47,18 @@ fun main() {
                 get("/leagues/{leagueName}") {
                     var refetchPlayers = call.request.queryParameters["refetchPlayers"]?.toBoolean() == true
                     var fetchNew = call.request.queryParameters["fetchNew"]?.toBoolean() == true
+                    val leagueName = call.parameters["leagueName"]
+
+                    // missing league name
+                    if (leagueName == null) call.respondHtml(HttpStatusCode.BadRequest) { body { p("Invalid league name") } }
+
                     call.respondHtml {
-                        val leagueName = call.parameters["leagueName"]
                         body {
-                            leagueName.also {
-                                leagueSection(
-                                    leagueName = it.toString(),
-                                    fetchNew = fetchNew,
-                                    refetchPlayers = refetchPlayers
-                                )
-                            } ?: p("Invalid league name")
+                            leagueSection(
+                                leagueName = leagueName.toString(),
+                                fetchNew = fetchNew,
+                                refetchPlayers = refetchPlayers
+                            )
                         }
                     }
                 }

@@ -39,7 +39,7 @@ class EspnFantasyPlatform(
             status = Status.Unknown
         )
         return FantasyPlayer(
-            isStarting = playerEntry.lineupSlotId.toInt() != 20,
+            isStarting = isStartingLineupSlotId(playerEntry.lineupSlotId),
             fullName = player.fullName,
             position = getEspnPosition(player.defaultPositionId),
             status = getEspnStatus(player.injuryStatus)
