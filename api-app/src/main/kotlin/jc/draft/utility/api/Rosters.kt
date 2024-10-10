@@ -144,9 +144,8 @@ fun UL.leaguePlayer(player: FantasyPlayer) {
         val status = player.status
         if (status != Status.Active)
             span {
-                // TODO standardize statuses, atm workaround to gather all questionable just checks first letter
                 val color = if (status == Status.Questionable) "text-orange-400" else "text-red-400"
-                classes = setOf(color)
+                classes = setOf(color, "text-sm", "italic")
                 +status.displayValue
             }
     }

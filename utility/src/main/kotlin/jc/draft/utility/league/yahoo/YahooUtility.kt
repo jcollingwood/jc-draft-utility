@@ -19,6 +19,7 @@ fun getYahooStatus(status: String?): Status {
     return when (status) {
         null -> Status.Active
         "Q" -> Status.Questionable
+        "D" -> Status.Doubtful
         "O" -> Status.Out
         "PUP-R" -> Status.PUP
         "IR" -> Status.IR

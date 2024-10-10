@@ -49,7 +49,7 @@ enum class Status(val displayValue: String) {
     Out("Out"),
     PUP("PUP"),
     IR("IR"),
-    Unknown("Unknown")
+    Unknown("???")
 }
 
 fun fantasyPlatformFactory(leaguePlatform: LeaguePlatform): FantasyPlatform<*> {

@@ -46,6 +46,7 @@ fun getSleeperStatus(status: String?): Status {
     return when (status) {
         null -> Status.Active
         "Questionable" -> Status.Questionable
+        "Doubtful" -> Status.Doubtful
         "Out" -> Status.Out
         "PUP" -> Status.PUP
         "IR" -> Status.IR
