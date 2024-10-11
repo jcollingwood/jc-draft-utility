@@ -38,6 +38,7 @@ fun FlowContent.rostersBody(): Unit {
                 hxTrigger("load")
                 hxGet("/rosters/leagues/$it")
                 hxSwap("innerHTML")
+
                 leagueSectionLoading(it)
             }
         }
