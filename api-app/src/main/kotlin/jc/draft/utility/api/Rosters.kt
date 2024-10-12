@@ -30,7 +30,7 @@ fun FlowContent.rostersBody(): Unit {
     }
     val leagueNames = fantasyLeagues.map { it.leagueName }
     div {
-        classes = setOf("grid", "grid-cols-3", "gap-4")
+        classes = setOf("grid", "grid-cols-1", "sm:grid-cols-2", "md:grid-cols-3", "gap-4")
         leagueNames.map {
             section {
                 id = "league-$it"
