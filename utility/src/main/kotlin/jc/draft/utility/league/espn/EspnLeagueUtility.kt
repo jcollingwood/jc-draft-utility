@@ -24,7 +24,10 @@ fun getEspnStatus(status: String?): Status {
         "OUT" -> Status.Out
         "PUP" -> Status.PUP
         "IR" -> Status.IR
-        else -> Status.Unknown
+        else -> {
+            println("unknown espn status: $status")
+            Status.Unknown
+        }
     }
 }
 

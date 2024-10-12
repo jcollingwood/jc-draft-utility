@@ -23,6 +23,9 @@ fun getYahooStatus(status: String?): Status {
         "O" -> Status.Out
         "PUP-R" -> Status.PUP
         "IR" -> Status.IR
-        else -> Status.Unknown
+        else -> {
+            println("unknown yahoo status: $status")
+            Status.Unknown
+        }
     }
 }

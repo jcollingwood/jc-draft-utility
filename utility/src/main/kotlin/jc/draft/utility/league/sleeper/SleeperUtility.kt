@@ -44,13 +44,18 @@ fun getSleeperPosition(position: String?): Position {
 
 fun getSleeperStatus(status: String?): Status {
     return when (status) {
+        "",
         null -> Status.Active
+
         "Questionable" -> Status.Questionable
         "Doubtful" -> Status.Doubtful
         "Out" -> Status.Out
         "PUP" -> Status.PUP
         "IR" -> Status.IR
-        else -> Status.Unknown
+        else -> {
+            println("unknown sleeper status: $status")
+            Status.Unknown
+        }
     }
 }
 
