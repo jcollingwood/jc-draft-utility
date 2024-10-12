@@ -23,12 +23,6 @@ fun FlowOrMetaDataOrPhrasingContent.htmx() {
 }
 
 fun FlowOrMetaDataOrPhrasingContent.matIcons() {
-    // refresh mat icon
-    link(
-        rel = "stylesheet",
-        href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0"
-    )
-    // system alt mat icon
     link(
         rel = "stylesheet",
         href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0"

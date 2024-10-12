@@ -9,6 +9,7 @@ import jc.draft.utility.league.fantasyPlatformFactory
 import jc.draft.utility.league.sleeper.SleeperFantasyPlatform
 import kotlinx.html.FlowContent
 import kotlinx.html.UL
+import kotlinx.html.a
 import kotlinx.html.button
 import kotlinx.html.classes
 import kotlinx.html.div
@@ -81,7 +82,7 @@ fun FlowContent.leagueSectionHeader(league: LeagueConfig) {
             +league.leagueName
         }
         span {
-            classes = setOf("text-sm", "text-gray-500", "flex", "flex-row", "gap-3", "divide-x")
+            classes = setOf("text-sm", "text-gray-500", "flex", "flex-row", "gap-3")
             p { +league.leaguePlatform.displayValue }
             // other league details could go here
         }
@@ -91,7 +92,7 @@ fun FlowContent.leagueSectionHeader(league: LeagueConfig) {
 fun FlowContent.leagueHeaderButtons(league: LeagueConfig) {
     val leagueName = league.leagueName
     div {
-        classes = setOf("flex", "gap-2")
+        classes = setOf("flex", "gap-3")
         var leagueButtonClasses = setOf(
             "rounded-full",
             "p-1",
@@ -99,6 +100,13 @@ fun FlowContent.leagueHeaderButtons(league: LeagueConfig) {
             "outline-1",
             "material-symbols-outlined"
         )
+        // open league page in new tab
+        a {
+            classes = leagueButtonClasses + setOf("outline-blue-300", "text-blue-500", "hover:bg-blue-100")
+            href = league.leagueUrl
+            target = "_blank"
+            +"open_in_new"
+        }
         // primary button to refetch league player data
         button {
             hxTrigger("click")
@@ -136,7 +144,6 @@ fun UL.leaguePlayer(player: FantasyPlayer) {
         classes = setOf(
             "flex", "flex-row", "gap-3", "pl-3", "items-center", "border-l-4", startingInd
         )
-        // TODO color and style position
         span {
             classes = setOf("text-sm", "font-bold")
             +player.position.name

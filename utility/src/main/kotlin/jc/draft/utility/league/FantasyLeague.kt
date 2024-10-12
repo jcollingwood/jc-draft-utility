@@ -66,7 +66,14 @@ data class LeagueConfig(
     val leagueId: String,
     val year: Int = 2024,
     val teamId: String
-)
+) {
+    val leagueUrl: String
+        get() = when (leaguePlatform) {
+            LeaguePlatform.ESPN -> "https://fantasy.espn.com/football/team?leagueId=$leagueId&teamId=$teamId&seasonId=$year"
+            LeaguePlatform.SLEEPER -> "https://sleeper.com/leagues/$leagueId/team"
+            LeaguePlatform.YAHOO -> "https://football.fantasysports.yahoo.com/f1/$leagueId/$teamId"
+        }
+}
 
 data class FantasyPlayer(
     val isStarting: Boolean = false,

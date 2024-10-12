@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation("org.postgresql:postgresql:42.3.1")
+    implementation("org.postgresql:postgresql:42.7.2")
 }
 
 flyway {
