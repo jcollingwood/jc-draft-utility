@@ -11,13 +11,18 @@ fun main() {
     repo.testQuery()
 }
 
-fun databaseConnect() {
+// opens database connection
+fun jcDraftUtilityDatabase() {
     Database.connect(
         url = System.getenv("PSQL_CONN_URL") ?: "jdbc:postgresql://localhost:5432/jcdraftutility",
         driver = "org.postgresql.Driver",
         user = System.getenv("PSQL_USER") ?: "postgres",
         password = System.getenv("PSQL_PASSWORD") ?: "postgres"
     )
+}
+
+fun databaseConnect() {
+    jcDraftUtilityDatabase()
 }
 
 class PlayerRepository {

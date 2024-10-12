@@ -1,10 +1,10 @@
 package jc.draft.utility.api
 
+import jc.draft.utility.FantasyLeagueService
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
 import jc.draft.utility.league.LeaguePlatform
 import jc.draft.utility.league.Status
-import jc.draft.utility.league.fantasyLeagues
 import jc.draft.utility.league.fantasyPlatformFactory
 import jc.draft.utility.league.sleeper.SleeperFantasyPlatform
 import kotlinx.html.FlowContent
@@ -22,14 +22,16 @@ import kotlinx.html.section
 import kotlinx.html.span
 import kotlinx.html.ul
 
-fun FlowContent.rostersBody(): Unit {
+fun FlowContent.rostersBody(leagueService: FantasyLeagueService): Unit {
     span {
+
         h1 {
             classes = setOf("font-medium", "text-lg", "mb-4")
             +"Fantasy Rosters"
         }
     }
-    val leagueNames = fantasyLeagues.map { it.leagueName }
+    val leagueNames = leagueService.getLeagues().map { it.leagueName }
+    println(leagueNames)
     div {
         classes = setOf("grid", "grid-cols-1", "sm:grid-cols-2", "md:grid-cols-3", "gap-4")
         leagueNames.map {
@@ -46,8 +48,13 @@ fun FlowContent.rostersBody(): Unit {
     }
 }
 
-fun FlowContent.leagueSection(leagueName: String, refetchPlayers: Boolean, fetchNew: Boolean) {
-    val leagueConfig = fantasyLeagues.find { leagueName == it.leagueName }
+fun FlowContent.leagueSection(
+    leagueService: FantasyLeagueService,
+    leagueName: String,
+    refetchPlayers: Boolean,
+    fetchNew: Boolean
+) {
+    val leagueConfig = leagueService.getLeagues().find { leagueName == it.leagueName }
 
     leagueConfig?.let { league ->
 

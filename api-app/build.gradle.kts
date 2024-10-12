@@ -14,6 +14,7 @@ application {
 }
 
 dependencies {
+    implementation(project(":data"))
     implementation(project(":utility"))
 
     // ktor dependencies
