@@ -6,6 +6,8 @@ plugins {
 
 dependencies {
     implementation("org.postgresql:postgresql:42.7.2")
+    // not getting pulled in transitively from exposed-conventions...
+    implementation("org.jetbrains.exposed:exposed-java-time:0.55.0")
 }
 
 flyway {

@@ -45,7 +45,8 @@ fun getSleeperPosition(position: String?): Position {
 fun getSleeperStatus(status: String?): Status {
     return when (status) {
         "",
-        null -> Status.Active
+        null,
+        "Active" -> Status.Active
 
         "Questionable" -> Status.Questionable
         "Doubtful" -> Status.Doubtful
@@ -94,7 +95,7 @@ class SleeperPlayersData : CacheableData<SleeperConfig> {
             }
 
             when (response.status) {
-                HttpStatusCode.OK -> println("successfully retrieved sleeper player data")
+                HttpStatusCode.OK -> println("successfully retrieved sleeper player data ${response.bodyAsText()}")
                 else -> println("failed to retrieve sleeper player data : \nstatus:${response.status}\nbody:${response.bodyAsText()}")
             }
             return@runBlocking response.bodyAsText()

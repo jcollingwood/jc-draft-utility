@@ -8,10 +8,11 @@ repositories {
     mavenCentral()
 }
 
-val exposedVersion = "0.54.0"
+val exposedVersion = "0.55.0"
 
 dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 }

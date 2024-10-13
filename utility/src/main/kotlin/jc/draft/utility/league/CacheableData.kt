@@ -1,8 +1,12 @@
 package jc.draft.utility.league
 
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
+import jc.draft.utility.data.entities.CachedData
+import jc.draft.utility.data.entities.CachedDataEntity
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.statements.api.ExposedBlob
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
 enum class CacheDataType(val extension: String) {
@@ -21,16 +25,18 @@ interface CacheableData<C> {
     }
 
     fun getData(c: C, fetchNew: Boolean = false): String {
-        // TODO mechanism to force refresh of data
-        val existingDataCache = if (fetchNew) null else getLatestFile(c)
+        println("getting data for $c")
+        val existingDataCache = if (fetchNew) null else getLatestData(c)
 
         existingDataCache?.let { data ->
             if (shouldRefresh(data)) {
                 println("refreshing data for $c")
-                val refresh: (C) -> String = { c -> refreshData(c, data.readText()) }
+                val refresh: (C) -> String = { c -> refreshData(c, data.data.inputStream.readAllBytes().toString()) }
                 return refreshAndPersistNewFile(refresh, c)
             } else {
-                return data.readText()
+                println("returning cached data")
+                println(data.data.inputStream.readAllBytes().toString())
+                return data.data.inputStream.readAllBytes().toString()
             }
         } ?: run {
             if (fetchNew)
@@ -53,13 +59,22 @@ interface CacheableData<C> {
 
     fun refreshAndPersistNewFile(refreshFunc: (C) -> String, c: C): String {
         val data = refreshFunc(c)
-        File(
-            "${dataDirectory(c)}/${
-                LocalDateTime.now().format(fileNameDateFormatter)
-            }${dataType().extension}"
-        ).writeText(
-            data
-        )
+//        File(
+//            "${dataDirectory(c)}/${
+//                LocalDateTime.now().format(fileNameDateFormatter)
+//            }${dataType().extension}"
+//        ).writeText(
+//            data
+//        )
+        transaction {
+            addLogger(StdOutSqlLogger)
+            CachedDataEntity.new {
+                dataType = dataType().name
+                timestamp = LocalDateTime.now()
+                dataKey = directory(c)
+                this.data = ExposedBlob(data.toByteArray())
+            }
+        }
         return data
     }
 
@@ -67,25 +82,17 @@ interface CacheableData<C> {
         return 24
     }
 
-    fun shouldRefresh(file: File?): Boolean {
-        if (file == null || !file.name.contains(dataType().extension)) return true
-        // expected file name format to be date time of format YYYYmmddHHmmss, check against configured refresh duration
-        val fileName = file.name.replace(dataType().extension, "")
-
-        if (fileName.length != FILE_NAME_DATE_FORMAT.length) println("invalid file name: ${file.name}")
-        val fileNameDate = LocalDateTime.parse(fileName, fileNameDateFormatter)
-
-        return fileNameDate.isBefore(LocalDateTime.now().minusHours(refreshDurationHours()))
+    fun shouldRefresh(data: CachedDataEntity?): Boolean {
+        if (data == null) return true
+        return data.timestamp.isBefore(LocalDateTime.now().minusHours(refreshDurationHours()))
     }
 
-    fun getLatestFile(c: C): File? {
-        return dataDirectory(c).walk().filter(File::isFile).sortedDescending().firstOrNull()
-    }
-
-    fun dataDirectory(c: C): File {
-        Files.createDirectories(Paths.get(ROSTER_DATA_DIRECTORY))
-        val subCacheDirectory = "${ROSTER_DATA_DIRECTORY}/${directory(c)}"
-        Files.createDirectories(Paths.get(subCacheDirectory))
-        return File(subCacheDirectory)
+    fun getLatestData(c: C): CachedDataEntity? {
+        return transaction {
+            CachedDataEntity
+                .find { CachedData.dataKey eq directory(c) }
+                .orderBy(CachedData.timestamp to SortOrder.DESC)
+                .firstOrNull()
+        }
     }
 }

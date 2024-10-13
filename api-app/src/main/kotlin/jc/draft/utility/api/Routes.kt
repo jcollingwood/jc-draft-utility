@@ -36,7 +36,7 @@ fun Application.configureRouting(leagueService: FantasyLeagueService = FantasyLe
                         main {
                             classes =
                                 setOf(
-                                    "font-inter", "flex", "flex-col", "h-screen", "w-screen", "items-center", "p-4"
+                                    "font-inter", "flex", "flex-col", "h-full", "w-screen", "items-center", "p-4"
                                 )
                             rostersBody(leagueService)
                         }

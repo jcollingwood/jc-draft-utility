@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "fantasy_league" (
 CREATE TABLE IF NOT EXISTS "cached_data" (
     "id" SERIAL PRIMARY KEY,
     "data_type" varchar,
-    "timestamp" int,
+    "timestamp" timestamp,
     "data_key" varchar,
     "data" bytea
 );

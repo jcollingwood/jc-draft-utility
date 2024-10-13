@@ -7,6 +7,7 @@ import jc.draft.utility.league.LeaguePlatform
 import jc.draft.utility.league.Status
 import jc.draft.utility.league.fantasyPlatformFactory
 import jc.draft.utility.league.sleeper.SleeperFantasyPlatform
+import jc.draft.utility.league.sleeper.getSleeperPlayers
 import kotlinx.html.FlowContent
 import kotlinx.html.UL
 import kotlinx.html.a
@@ -30,8 +31,12 @@ fun FlowContent.rostersBody(leagueService: FantasyLeagueService): Unit {
             +"Fantasy Rosters"
         }
     }
-    val leagueNames = leagueService.getLeagues().map { it.leagueName }
-    println(leagueNames)
+    val leagues = leagueService.getLeagues()
+    val leagueNames = leagues.map { it.leagueName }
+    // trigger player load/fetch once before multiple sleeper leagues can trigger multiple loads
+    if (leagues.any { it.leaguePlatform == LeaguePlatform.SLEEPER })
+        getSleeperPlayers()
+
     div {
         classes = setOf("grid", "grid-cols-1", "sm:grid-cols-2", "md:grid-cols-3", "gap-4")
         leagueNames.map {
