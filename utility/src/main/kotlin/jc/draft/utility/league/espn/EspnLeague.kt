@@ -3,8 +3,8 @@ package jc.draft.utility.league.espn
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import jc.draft.utility.league.CacheDataType
-import jc.draft.utility.league.CacheableData
+import jc.draft.utility.CacheDataType
+import jc.draft.utility.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig

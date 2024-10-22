@@ -16,6 +16,12 @@ tool.
 psql -h localhost -p 5432 -U postgres -c 'create database jcdraftutility;' jcdraftutility
 ```
 
+To execute arbitrary queries against docker database:
+
+```
+psql -h localhost -p 5432 -U postgres -d jcdraftutility -c 'select * from players;'
+```
+
 Flyway tasks to run migration scripts (note: changes to migration scripts won't take affect unless you rebuild):
 
 ```

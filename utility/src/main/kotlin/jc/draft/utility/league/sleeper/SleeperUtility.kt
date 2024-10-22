@@ -5,8 +5,8 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import jc.draft.utility.league.CacheDataType
-import jc.draft.utility.league.CacheableData
+import jc.draft.utility.CacheDataType
+import jc.draft.utility.CacheableData
 import jc.draft.utility.league.Position
 import jc.draft.utility.league.Status
 import jc.draft.utility.league.client

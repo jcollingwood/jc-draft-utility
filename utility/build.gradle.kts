@@ -6,6 +6,7 @@ plugins {
 
 //val ktorVersion: String by project
 val ktorVersion = "2.3.12"
+val testContainerVersion = "1.20.2"
 
 dependencies {
     implementation(project(":data"))
@@ -19,6 +20,9 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-auth:$ktorVersion")
+
+    testImplementation("org.testcontainers:testcontainers:$testContainerVersion")
+    testImplementation("org.testcontainers:postgresql:$testContainerVersion")
 }
 
 tasks.named<JavaExec>("run") {

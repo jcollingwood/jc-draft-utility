@@ -19,14 +19,10 @@ dependencies {
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+
+    testImplementation(kotlin("test"))
 }
 
-testing {
-    suites {
-        // Configure the built-in test suite
-        val test by getting(JvmTestSuite::class) {
-            // Use JUnit Jupiter test framework
-            useJUnitJupiter("5.8.2")
-        }
-    }
+tasks.test {
+    useJUnitPlatform()
 }

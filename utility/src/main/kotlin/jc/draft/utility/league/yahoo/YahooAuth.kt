@@ -12,8 +12,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.headers
 import io.ktor.util.InternalAPI
-import jc.draft.utility.league.CacheDataType
-import jc.draft.utility.league.CacheableData
+import jc.draft.utility.CacheDataType
+import jc.draft.utility.CacheableData
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerialName

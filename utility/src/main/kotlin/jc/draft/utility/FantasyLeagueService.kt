@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class FantasyLeagueService {
     fun getLeagues(): List<LeagueConfig> {
         return transaction {
-            return@transaction listOf(FantasyLeagueEntity.all().map {
+            return@transaction FantasyLeagueEntity.all().map {
                 LeagueConfig(
                     leaguePlatform = LeaguePlatform.valueOf(it.leaguePlatform),
                     year = it.year,
@@ -16,8 +16,7 @@ class FantasyLeagueService {
                     leagueId = it.leagueId,
                     teamId = it.teamId
                 )
-            }[4])
+            }
         }
-//        return fantasyLeagues
     }
 }

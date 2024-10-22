@@ -1,4 +1,4 @@
-package jc.draft.utility.league
+package jc.draft.utility
 
 import jc.draft.utility.data.entities.CachedData
 import jc.draft.utility.data.entities.CachedDataEntity
@@ -31,12 +31,11 @@ interface CacheableData<C> {
         existingDataCache?.let { data ->
             if (shouldRefresh(data)) {
                 println("refreshing data for $c")
-                val refresh: (C) -> String = { c -> refreshData(c, data.data.inputStream.readAllBytes().toString()) }
+                val refresh: (C) -> String = { c -> refreshData(c, String(data.data.bytes)) }
                 return refreshAndPersistNewFile(refresh, c)
             } else {
                 println("returning cached data")
-                println(data.data.inputStream.readAllBytes().toString())
-                return data.data.inputStream.readAllBytes().toString()
+                return String(data.data.bytes)
             }
         } ?: run {
             if (fetchNew)
@@ -59,13 +58,6 @@ interface CacheableData<C> {
 
     fun refreshAndPersistNewFile(refreshFunc: (C) -> String, c: C): String {
         val data = refreshFunc(c)
-//        File(
-//            "${dataDirectory(c)}/${
-//                LocalDateTime.now().format(fileNameDateFormatter)
-//            }${dataType().extension}"
-//        ).writeText(
-//            data
-//        )
         transaction {
             addLogger(StdOutSqlLogger)
             CachedDataEntity.new {

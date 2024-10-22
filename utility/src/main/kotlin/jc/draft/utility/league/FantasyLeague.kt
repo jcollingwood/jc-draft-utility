@@ -1,5 +1,6 @@
 package jc.draft.utility.league
 
+import jc.draft.utility.CacheableData
 import jc.draft.utility.league.espn.EspnFantasyPlatform
 import jc.draft.utility.league.espn.bfflLeague
 import jc.draft.utility.league.espn.clayLeague

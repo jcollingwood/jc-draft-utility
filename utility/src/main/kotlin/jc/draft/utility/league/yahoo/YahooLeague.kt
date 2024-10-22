@@ -11,8 +11,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import jc.draft.utility.league.CacheDataType
-import jc.draft.utility.league.CacheableData
+import jc.draft.utility.CacheDataType
+import jc.draft.utility.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
