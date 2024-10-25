@@ -13,6 +13,7 @@ import jc.draft.utility.league.LeagueConfig
 import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
+import mu.two.KotlinLogging
 
 /**
  * Sleeper is public and readonly so no auth needed
@@ -57,6 +58,10 @@ class SleeperFantasyPlatform(
 }
 
 class SleeperLeagueData : CacheableData<LeagueConfig> {
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
+
     private fun getSleeperLeagueUrl(config: LeagueConfig): String {
         return "https://api.sleeper.app/v1/league/${config.leagueId}/rosters"
     }
@@ -75,11 +80,11 @@ class SleeperLeagueData : CacheableData<LeagueConfig> {
                 method = HttpMethod.Get
             }
             when (response.status) {
-                HttpStatusCode.OK -> println("successfully retrieved league roster data")
+                HttpStatusCode.OK -> log.info("successfully retrieved league roster data for ${c.leagueName}")
                 else -> {
                     val errorMessage =
                         "failed to retrieve league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}"
-                    println(errorMessage)
+                    log.error(errorMessage)
                     throw RuntimeException(errorMessage)
                 }
             }

@@ -19,6 +19,7 @@ import jc.draft.utility.league.LeagueConfig
 import jc.draft.utility.league.LeaguePlatform
 import jc.draft.utility.league.client
 import kotlinx.coroutines.runBlocking
+import mu.two.KotlinLogging
 
 val ramLeague = LeagueConfig(
     leaguePlatform = LeaguePlatform.YAHOO,
@@ -69,6 +70,10 @@ class YahooFantasyPlatform(
 class YahooLeagueData(
     private val yahooAuthService: YahooAuthService
 ) : CacheableData<LeagueConfig> {
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
+
     private fun constructTeamKey(c: LeagueConfig): String {
         return "nfl.l.${c.leagueId}.t.${c.teamId}"
     }
@@ -97,11 +102,11 @@ class YahooLeagueData(
                 }
             }
             when (response.status) {
-                HttpStatusCode.OK -> println("successfully retrieved yahoo league roster data")
+                HttpStatusCode.OK -> log.debug("successfully retrieved yahoo league roster data for ${c.leagueName}")
                 else -> {
                     val errorMessage =
                         "failed to retrieve yahoo league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}"
-                    println(errorMessage)
+                    log.error(errorMessage)
                     throw RuntimeException(errorMessage)
                 }
             }

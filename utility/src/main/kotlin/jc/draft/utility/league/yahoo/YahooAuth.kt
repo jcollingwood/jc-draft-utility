@@ -18,6 +18,7 @@ import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import mu.two.KotlinLogging
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -39,6 +40,7 @@ data class YahooAuthConfig(
 
 class YahooAuthService : CacheableData<YahooAuthConfig> {
     companion object {
+        private val log = KotlinLogging.logger { }
         const val YAHOO_GET_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token"
     }
 
@@ -109,9 +111,9 @@ class YahooAuthService : CacheableData<YahooAuthConfig> {
             }
 
             when (response.status) {
-                HttpStatusCode.OK -> println("successfully retrieved yahoo access token info")
+                HttpStatusCode.OK -> log.debug("successfully retrieved yahoo access token info")
                 else -> {
-                    println("failed to authorized with yahoo: \nstatus:${response.status}\nbody:${response.bodyAsText()}")
+                    log.error("failed to authorized with yahoo: \nstatus:${response.status}\nbody:${response.bodyAsText()}")
                     throw RuntimeException("failed to authorized with yahoo: \nstatus:${response.status}\nbody:${response.bodyAsText()}")
                 }
             }

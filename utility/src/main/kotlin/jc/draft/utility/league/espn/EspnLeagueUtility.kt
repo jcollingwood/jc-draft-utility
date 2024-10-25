@@ -2,6 +2,9 @@ package jc.draft.utility.league.espn
 
 import jc.draft.utility.league.Position
 import jc.draft.utility.league.Status
+import mu.two.KotlinLogging
+
+val log = KotlinLogging.logger {}
 
 fun getEspnPosition(position: Integer): Position {
     return when (position.toInt()) {
@@ -25,7 +28,7 @@ fun getEspnStatus(status: String?): Status {
         "PUP" -> Status.PUP
         "IR" -> Status.IR
         else -> {
-            println("unknown espn status: $status")
+            log.debug("unknown espn status: $status")
             Status.Unknown
         }
     }

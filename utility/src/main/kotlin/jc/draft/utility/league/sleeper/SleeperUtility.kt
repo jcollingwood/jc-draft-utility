@@ -14,6 +14,9 @@ import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import mu.two.KotlinLogging
+
+val log = KotlinLogging.logger {}
 
 @Serializable
 data class SleeperPlayer(
@@ -54,7 +57,7 @@ fun getSleeperStatus(status: String?): Status {
         "PUP" -> Status.PUP
         "IR" -> Status.IR
         else -> {
-            println("unknown sleeper status: $status")
+            log.debug("unknown sleeper status: $status")
             Status.Unknown
         }
     }
@@ -95,8 +98,8 @@ class SleeperPlayersData : CacheableData<SleeperConfig> {
             }
 
             when (response.status) {
-                HttpStatusCode.OK -> println("successfully retrieved sleeper player data ${response.bodyAsText()}")
-                else -> println("failed to retrieve sleeper player data : \nstatus:${response.status}\nbody:${response.bodyAsText()}")
+                HttpStatusCode.OK -> log.info("successfully retrieved sleeper player data for $c")
+                else -> log.error("failed to retrieve sleeper player data : \nstatus:${response.status}\nbody:${response.bodyAsText()}")
             }
             return@runBlocking response.bodyAsText()
         }

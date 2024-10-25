@@ -1,21 +1,25 @@
 package jc.draft.utility.league
 
+import mu.two.KotlinLogging
+
+val log = KotlinLogging.logger {}
+
 fun main() {
 
     val fantasyLeaguePlayers = fantasyLeagues
         .map { league -> fantasyPlatformFactory(league.leaguePlatform).getLeaguePlayers(league) }
 
-    println("\nFantasy League Rosters:\n")
+    log.info("\nFantasy League Rosters:\n")
 
     fantasyLeaguePlayers.forEach { leaguePlayers ->
-        println("----------")
-        println("League: ${leaguePlayers.league.leagueName}")
-        println("----------")
+        log.info("----------")
+        log.info("League: ${leaguePlayers.league.leagueName}")
+        log.info("----------")
         leaguePlayers.players.forEach {
             if (it.status == Status.Active)
-                println(it.fullName)
+                log.info(it.fullName)
             else
-                println("${it.fullName} : ${it.status}")
+                log.info("${it.fullName} : ${it.status}")
         }
         println()
     }

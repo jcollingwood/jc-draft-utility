@@ -2,6 +2,7 @@ package jc.draft.utility
 
 import jc.draft.utility.data.entities.CachedData
 import jc.draft.utility.data.entities.CachedDataEntity
+import mu.two.KotlinLogging
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
@@ -19,29 +20,32 @@ enum class CacheDataType(val extension: String) {
  * Only required configuration when implementing is to provide the cache directory and the mechanism for refreshing the data
  */
 interface CacheableData<C> {
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
+
     fun directory(c: C): String
     fun dataType(): CacheDataType {
         return CacheDataType.TXT
     }
 
     fun getData(c: C, fetchNew: Boolean = false): String {
-        println("getting data for $c")
         val existingDataCache = if (fetchNew) null else getLatestData(c)
 
         existingDataCache?.let { data ->
             if (shouldRefresh(data)) {
-                println("refreshing data for $c")
+                log.info("refreshing data for $c")
                 val refresh: (C) -> String = { c -> refreshData(c, String(data.data.bytes)) }
                 return refreshAndPersistNewFile(refresh, c)
             } else {
-                println("returning cached data")
+                log.info("returning cached data for $c")
                 return String(data.data.bytes)
             }
         } ?: run {
             if (fetchNew)
-                println("refetch of data explicitly requested for $c")
+                log.info("refetch of data explicitly requested for $c")
             else
-                println("no existing data, retrieving new for $c")
+                log.info("no existing data, retrieving new for $c")
             val refresh: (C) -> String = { c -> refreshDataFirstTime(c) }
             return refreshAndPersistNewFile(refresh, c)
         }

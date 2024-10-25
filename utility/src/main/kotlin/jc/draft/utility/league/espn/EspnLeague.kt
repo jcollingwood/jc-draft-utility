@@ -13,6 +13,7 @@ import jc.draft.utility.league.Status
 import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
+import mu.two.KotlinLogging
 
 /**
  * ESPN uses cookies for authentication
@@ -49,6 +50,7 @@ class EspnFantasyPlatform(
 
 class EspnLeagueData : CacheableData<LeagueConfig> {
     companion object {
+        private val log = KotlinLogging.logger {}
         const val ESPN_URL = "https://lm-api-reads.fantasy.espn.com/apis/v3/games"
     }
 
@@ -83,11 +85,11 @@ class EspnLeagueData : CacheableData<LeagueConfig> {
                 cookie("espn_s2", ESPN_S2)
             }
             when (response.status) {
-                HttpStatusCode.OK -> println("successfully retrieved league roster data")
+                HttpStatusCode.OK -> log.info("successfully retrieved league roster data for ${c.leagueName}")
                 else -> {
                     val errorMessage =
                         "failed to retrieve league roster data : \nstatus:${response.status}\nbody:${response.bodyAsText()}"
-                    println(errorMessage)
+                    log.error(errorMessage)
                     throw RuntimeException(errorMessage)
                 }
             }

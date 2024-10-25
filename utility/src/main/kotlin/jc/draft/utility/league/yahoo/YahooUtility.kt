@@ -2,6 +2,9 @@ package jc.draft.utility.league.yahoo
 
 import jc.draft.utility.league.Position
 import jc.draft.utility.league.Status
+import mu.two.KotlinLogging
+
+val log = KotlinLogging.logger {}
 
 fun getYahooPosition(position: String?): Position {
     return when (position) {
@@ -24,7 +27,7 @@ fun getYahooStatus(status: String?): Status {
         "PUP-R" -> Status.PUP
         "IR" -> Status.IR
         else -> {
-            println("unknown yahoo status: $status")
+            log.debug("unknown yahoo status: $status")
             Status.Unknown
         }
     }

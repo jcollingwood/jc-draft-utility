@@ -13,6 +13,7 @@ import jc.draft.utility.league.sleeper.ffbCardsLeague
 import jc.draft.utility.league.sleeper.ffbDynastyLeague
 import jc.draft.utility.league.yahoo.YahooFantasyPlatform
 import jc.draft.utility.league.yahoo.ramLeague
+import mu.two.KotlinLogging
 
 val fantasyLeagues = listOf(
     federationLeague,
@@ -89,6 +90,10 @@ data class FantasyLeague(
 )
 
 interface FantasyPlatform<P> {
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
+
     fun getLeagueDataService(): CacheableData<LeagueConfig>
     fun parsePlayersFromPayload(payload: String, teamId: String): List<P>
     fun mapToFantasyPlayer(player: P): FantasyPlayer
@@ -106,7 +111,7 @@ interface FantasyPlatform<P> {
         try {
             return parsePlayersFromPayload(getLeagueDataService().getData(leagueConfig, fetchNew), leagueConfig.teamId)
         } catch (e: Exception) {
-            println(e)
+            log.error("failed to retrieve league roster for $leagueConfig", e)
             return emptyList()
         }
     }

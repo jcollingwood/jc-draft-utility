@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/api-app/jc-draft-utility.api-app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/api-app/jc-draft-utility.api-app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jc-draft-utility.buildSrc.main.iml" filepath="$PROJECT_DIR$/.idea/modules/jc-draft-utility.buildSrc.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/utility/jc-draft-utility.utility.test.iml" filepath="$PROJECT_DIR$/.idea/modules/utility/jc-draft-utility.utility.test.iml" />
     </modules>
   </component>
