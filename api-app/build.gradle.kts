@@ -26,6 +26,13 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-compression:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
+    // http client deps
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
     // html/css dsl
     implementation("io.ktor:ktor-server-html-builder:$ktorVersion")

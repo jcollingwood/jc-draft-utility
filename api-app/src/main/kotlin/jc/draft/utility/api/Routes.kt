@@ -9,6 +9,8 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import jc.draft.utility.FantasyLeagueService
+import jc.draft.utility.api.auth.UserSession
+import jc.draft.utility.api.auth.authenticate
 import kotlinx.html.body
 import kotlinx.html.classes
 import kotlinx.html.head
@@ -25,9 +27,12 @@ fun Application.configureRouting(leagueService: FantasyLeagueService = FantasyLe
 
         route("/rosters") {
             get {
+                val userSession: UserSession? = authenticate(call)
+                if (userSession == null) return@get
+
                 call.respondHtml {
                     head {
-                        title { +"Fantasy Rosters" }
+                        title { +"Fantasy Rosters : ${userSession.state}" }
                         stylesAndFonts()
                         matIcons()
                         htmx()
@@ -44,6 +49,9 @@ fun Application.configureRouting(leagueService: FantasyLeagueService = FantasyLe
                 }
             }
             get("/leagues/{leagueName}") {
+                val userSession: UserSession? = authenticate(call)
+                if (userSession == null) return@get
+
                 var refetchPlayers = call.request.queryParameters["refetchPlayers"]?.toBoolean() == true
                 var fetchNew = call.request.queryParameters["fetchNew"]?.toBoolean() == true
                 val leagueName = call.parameters["leagueName"]

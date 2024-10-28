@@ -5,13 +5,11 @@
         </encoder>
     </appender>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 
-
-    <logger name="io.netty.util" level="INFO"/>
-    <logger name="io.netty.util.internal" level="INFO"/>
-    <logger name="io.netty.buffer" level="INFO"/>
-    <logger name="Exposed" level="warn"/>
+    <logger name="io.netty.util" level="info"/>
+    <logger name="io.netty.buffer" level="info"/>
+    <logger name="Exposed" level="info"/>
 </configuration>
