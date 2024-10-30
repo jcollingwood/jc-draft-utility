@@ -8,6 +8,7 @@ import jc.draft.utility.league.Status
 import jc.draft.utility.league.fantasyPlatformFactory
 import jc.draft.utility.league.sleeper.SleeperFantasyPlatform
 import jc.draft.utility.league.sleeper.getSleeperPlayers
+import jc.draft.utility.league.yahoo.YAHOO_AUTH_CONFIG
 import kotlinx.html.FlowContent
 import kotlinx.html.UL
 import kotlinx.html.a
@@ -77,11 +78,15 @@ fun FlowContent.leagueSection(
             leagueSectionHeader(league)
             leagueHeaderButtons(league)
         }
-        ul {
-            classes = setOf("gap-2")
-            leaguePlayers.players.map { player ->
-                leaguePlayer(player)
+        if (leaguePlayers.players.isNotEmpty()) {
+            ul {
+                classes = setOf("gap-2")
+                leaguePlayers.players.map { player ->
+                    leaguePlayer(player)
+                }
             }
+        } else {
+            configureLeague(league)
         }
     } ?: p("Invalid league name: $leagueName")
 }
@@ -183,6 +188,29 @@ fun FlowContent.leagueSectionLoading(leagueName: String) {
         div {
             classes = setOf("flex", "gap-2")
             +"Loading..."
+        }
+    }
+}
+
+fun FlowContent.configureLeague(league: LeagueConfig) {
+    when (league.leaguePlatform) {
+        LeaguePlatform.YAHOO -> {
+            p("Probably need a new yahoo auth code")
+            a {
+                href =
+                    "https://api.login.yahoo.com/oauth2/request_auth?client_id=${YAHOO_AUTH_CONFIG.yahooClientId}&response_type=code&redirect_uri=${YAHOO_AUTH_CONFIG.yahooRedirectUri}"
+                target = "_blank"
+                +"get new yahoo auth code"
+                p("open_in_new")
+            }
+        }
+
+        LeaguePlatform.ESPN -> {
+            p("ESPN cookies not configured probably")
+        }
+
+        LeaguePlatform.SLEEPER -> {
+            p("The developer probably messed this one up")
         }
     }
 }

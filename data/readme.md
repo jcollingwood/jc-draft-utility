@@ -13,7 +13,7 @@ Ensure `jcdraftutility` database exists before running flyway scripts. Can conne
 tool.
 
 ```
-psql -h localhost -p 5432 -U postgres -c 'create database jcdraftutility;' jcdraftutility
+psql -h localhost -p 5432 -U postgres -c 'create database jcdraftutility;' 
 ```
 
 To execute arbitrary queries against docker database:

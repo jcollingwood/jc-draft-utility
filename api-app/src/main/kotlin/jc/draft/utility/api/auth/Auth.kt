@@ -19,6 +19,7 @@ import io.ktor.server.routing.routing
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.server.sessions.sessions
+import jc.draft.utility.api.config.PORT
 import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.p
@@ -33,7 +34,7 @@ val OAUTH_KEY = "auth-oauth-google"
 val SESSION_COOKIE_KEY = "sesh"
 
 // TODO externalize domain
-val ROOT_DOMAIN = "http://localhost:8081"
+val ROOT_DOMAIN = "http://localhost:${PORT}"
 
 // map of redirects
 val redirects = mutableMapOf<String, String>()

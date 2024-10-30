@@ -38,6 +38,13 @@ data class YahooAuthConfig(
     val yahooRedirectUri: String
 )
 
+val YAHOO_AUTH_CONFIG = YahooAuthConfig(
+    yahooClientId = System.getenv("YAHOO_FANTASY_CLIENT_ID") ?: "",
+    yahooClientSecret = System.getenv("YAHOO_FANTASY_CLIENT_SECRET") ?: "",
+    yahooAuthCode = System.getenv("YAHOO_FANTASY_OAUTH_CODE") ?: "",
+    yahooRedirectUri = "https://jc-draft-utility.com"
+)
+
 class YahooAuthService : CacheableData<YahooAuthConfig> {
     companion object {
         private val log = KotlinLogging.logger { }
@@ -45,13 +52,7 @@ class YahooAuthService : CacheableData<YahooAuthConfig> {
     }
 
     fun getYahooAccessToken(): OauthResponse {
-        val config = YahooAuthConfig(
-            yahooClientId = System.getenv("YAHOO_FANTASY_CLIENT_ID") ?: "",
-            yahooClientSecret = System.getenv("YAHOO_FANTASY_CLIENT_SECRET") ?: "",
-            yahooAuthCode = System.getenv("YAHOO_FANTASY_OAUTH_CODE") ?: "",
-            yahooRedirectUri = "https://jc-draft-utility.com"
-        )
-        return parseAuthData(getData(config))
+        return parseAuthData(getData(YAHOO_AUTH_CONFIG))
     }
 
     override fun directory(c: YahooAuthConfig): String {

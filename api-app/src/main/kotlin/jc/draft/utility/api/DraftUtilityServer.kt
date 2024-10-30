@@ -8,6 +8,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import jc.draft.utility.api.auth.authModule
+import jc.draft.utility.api.config.PORT
 
 fun Application.appModule() {
     configureDatabase()
@@ -22,7 +23,7 @@ val applicationHttpClient = HttpClient(CIO) {
 
 fun main() {
     val httpClient: HttpClient = applicationHttpClient
-    embeddedServer(Netty, 8081) {
+    embeddedServer(Netty, PORT) {
         authModule(httpClient)
         appModule()
     }.start(wait = true)
