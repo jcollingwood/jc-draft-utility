@@ -10,9 +10,9 @@ import io.ktor.server.netty.Netty
 import jc.draft.utility.api.auth.authModule
 import jc.draft.utility.api.config.PORT
 
-fun Application.appModule() {
+fun Application.appModule(httpClient: HttpClient) {
     configureDatabase()
-    configureRouting()
+    configureRouting(httpClient)
 }
 
 val applicationHttpClient = HttpClient(CIO) {
@@ -25,6 +25,6 @@ fun main() {
     val httpClient: HttpClient = applicationHttpClient
     embeddedServer(Netty, PORT) {
         authModule(httpClient)
-        appModule()
+        appModule(httpClient)
     }.start(wait = true)
 }

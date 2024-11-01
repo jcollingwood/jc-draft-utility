@@ -1,5 +1,6 @@
 package jc.draft.utility.league.espn
 
+import io.ktor.client.HttpClient
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -10,7 +11,6 @@ import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
 import jc.draft.utility.league.Position
 import jc.draft.utility.league.Status
-import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
 import mu.two.KotlinLogging
@@ -19,7 +19,8 @@ import mu.two.KotlinLogging
  * ESPN uses cookies for authentication
  */
 class EspnFantasyPlatform(
-    private val espnLeague: CacheableData<LeagueConfig> = EspnLeagueData()
+    val httpClient: HttpClient,
+    private val espnLeague: CacheableData<LeagueConfig> = EspnLeagueData(httpClient)
 ) : FantasyPlatform<EspnEntry> {
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
@@ -48,7 +49,7 @@ class EspnFantasyPlatform(
     }
 }
 
-class EspnLeagueData : CacheableData<LeagueConfig> {
+class EspnLeagueData(val client: HttpClient) : CacheableData<LeagueConfig> {
     companion object {
         private val log = KotlinLogging.logger {}
         const val ESPN_URL = "https://lm-api-reads.fantasy.espn.com/apis/v3/games"

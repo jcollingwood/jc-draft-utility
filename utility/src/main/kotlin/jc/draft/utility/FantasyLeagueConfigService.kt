@@ -5,7 +5,7 @@ import jc.draft.utility.league.LeagueConfig
 import jc.draft.utility.league.LeaguePlatform
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class FantasyLeagueService {
+class FantasyLeagueConfigService {
     fun getLeagues(): List<LeagueConfig> {
         return transaction {
             return@transaction FantasyLeagueEntity.all().map {

@@ -1,13 +1,12 @@
 package jc.draft.utility.api
 
-import jc.draft.utility.FantasyLeagueService
+import jc.draft.utility.FantasyLeagueConfigService
+import jc.draft.utility.api.rosters.LeagueService
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
 import jc.draft.utility.league.LeaguePlatform
 import jc.draft.utility.league.Status
-import jc.draft.utility.league.fantasyPlatformFactory
-import jc.draft.utility.league.sleeper.SleeperFantasyPlatform
-import jc.draft.utility.league.sleeper.getSleeperPlayers
+import jc.draft.utility.league.sleeper.SleeperPlayerService
 import jc.draft.utility.league.yahoo.YAHOO_AUTH_CONFIG
 import kotlinx.html.FlowContent
 import kotlinx.html.UL
@@ -24,20 +23,22 @@ import kotlinx.html.section
 import kotlinx.html.span
 import kotlinx.html.ul
 
-fun FlowContent.rostersBody(leagueService: FantasyLeagueService): Unit {
-    span {
+fun FlowContent.rostersBody(
+    leagueConfigService: FantasyLeagueConfigService,
+    sleeperPlayerService: SleeperPlayerService
+): Unit {
+    val leagues = leagueConfigService.getLeagues()
+    val leagueNames = leagues.map { it.leagueName }
+    // trigger player load/fetch once before multiple sleeper leagues can trigger multiple loads
+    if (leagues.any { it.leaguePlatform == LeaguePlatform.SLEEPER })
+        sleeperPlayerService.getPlayers()
 
+    span {
         h1 {
             classes = setOf("font-medium", "text-lg", "mb-4")
             +"Fantasy Rosters"
         }
     }
-    val leagues = leagueService.getLeagues()
-    val leagueNames = leagues.map { it.leagueName }
-    // trigger player load/fetch once before multiple sleeper leagues can trigger multiple loads
-    if (leagues.any { it.leaguePlatform == LeaguePlatform.SLEEPER })
-        getSleeperPlayers()
-
     div {
         classes = setOf("grid", "grid-cols-1", "sm:grid-cols-2", "md:grid-cols-3", "gap-4")
         leagueNames.map {
@@ -55,23 +56,18 @@ fun FlowContent.rostersBody(leagueService: FantasyLeagueService): Unit {
 }
 
 fun FlowContent.leagueSection(
-    leagueService: FantasyLeagueService,
+    leagueConfigService: FantasyLeagueConfigService,
+    leagueService: LeagueService,
     leagueName: String,
-    refetchPlayers: Boolean,
     fetchNew: Boolean
 ) {
-    val leagueConfig = leagueService.getLeagues().find { leagueName == it.leagueName }
+    val leagueConfig = leagueConfigService.getLeagues().find { leagueName == it.leagueName }
 
     leagueConfig?.let { league ->
-
-        val fantasyPlatform = fantasyPlatformFactory(league.leaguePlatform)
-        // refetch sleeper player data if triggered
-        if (leagueConfig.leaguePlatform == LeaguePlatform.SLEEPER && refetchPlayers) {
-            (fantasyPlatform as SleeperFantasyPlatform).refetchSleeperPlayers()
-        }
-
-        val leaguePlayers =
-            fantasyPlatform.getLeaguePlayers(leagueConfig = league, fetchNew = fetchNew)
+        val leaguePlayers = leagueService.getLeagueRoster(
+            leagueConfig = league,
+            fetchNew = fetchNew
+        )
 
         div {
             classes = setOf("mb-4", "flex", "flex-col", "gap-2")

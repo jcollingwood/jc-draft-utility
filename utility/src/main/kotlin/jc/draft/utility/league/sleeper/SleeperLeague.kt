@@ -1,5 +1,6 @@
 package jc.draft.utility.league.sleeper
 
+import io.ktor.client.HttpClient
 import io.ktor.client.request.request
 import io.ktor.client.statement.*
 import io.ktor.client.statement.bodyAsText
@@ -10,7 +11,6 @@ import jc.draft.utility.CacheableData
 import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
-import jc.draft.utility.league.client
 import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
 import mu.two.KotlinLogging
@@ -19,12 +19,13 @@ import mu.two.KotlinLogging
  * Sleeper is public and readonly so no auth needed
  */
 class SleeperFantasyPlatform(
-    private val sleeperLeague: CacheableData<LeagueConfig> = SleeperLeagueData(),
-    private var sleeperPlayers: Map<String, SleeperPlayer>? = getSleeperPlayers()
+    val httpClient: HttpClient,
+    var sleeperPlayers: Map<String, SleeperPlayer>?,
+    private val sleeperLeague: CacheableData<LeagueConfig> = SleeperLeagueData(httpClient),
 ) : FantasyPlatform<SleeperPlayer> {
 
     fun refetchSleeperPlayers() {
-        sleeperPlayers = getSleeperPlayers(true)
+        sleeperPlayers = sleeperPlayers
     }
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
@@ -57,7 +58,7 @@ class SleeperFantasyPlatform(
     }
 }
 
-class SleeperLeagueData : CacheableData<LeagueConfig> {
+class SleeperLeagueData(val client: HttpClient) : CacheableData<LeagueConfig> {
     companion object {
         private val log = KotlinLogging.logger {}
     }

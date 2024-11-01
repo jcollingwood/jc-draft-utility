@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.ktor.client.HttpClient
 import io.ktor.client.request.headers
 import io.ktor.client.request.request
 import io.ktor.client.statement.HttpResponse
@@ -17,7 +18,6 @@ import jc.draft.utility.league.FantasyPlatform
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
 import jc.draft.utility.league.LeaguePlatform
-import jc.draft.utility.league.client
 import kotlinx.coroutines.runBlocking
 import mu.two.KotlinLogging
 
@@ -41,7 +41,11 @@ val xmlDeserializer = XmlMapper(JacksonXmlModule()
  * https://api.login.yahoo.com/oauth2/request_auth\?client_id\=$YAHOO_FANTASY_CLIENT_ID\&response_type\=code\&redirect_uri\=https://jc-draft-utility.com
  */
 class YahooFantasyPlatform(
-    private val yahooLeague: CacheableData<LeagueConfig> = YahooLeagueData(yahooAuthService = YahooAuthService())
+    val httpClient: HttpClient,
+    private val yahooLeague: CacheableData<LeagueConfig> = YahooLeagueData(
+        client = httpClient,
+        yahooAuthService = YahooAuthService(httpClient)
+    )
 ) : FantasyPlatform<YahooPlayer> {
 
     override fun getLeagueDataService(): CacheableData<LeagueConfig> {
@@ -68,6 +72,7 @@ class YahooFantasyPlatform(
 }
 
 class YahooLeagueData(
+    val client: HttpClient,
     private val yahooAuthService: YahooAuthService
 ) : CacheableData<LeagueConfig> {
     companion object {

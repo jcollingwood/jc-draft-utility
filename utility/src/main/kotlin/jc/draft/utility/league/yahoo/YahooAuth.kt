@@ -1,7 +1,6 @@
 package jc.draft.utility.league.yahoo
 
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.request
 import io.ktor.client.statement.HttpResponse
@@ -45,7 +44,7 @@ val YAHOO_AUTH_CONFIG = YahooAuthConfig(
     yahooRedirectUri = "https://jc-draft-utility.com"
 )
 
-class YahooAuthService : CacheableData<YahooAuthConfig> {
+class YahooAuthService(val client: HttpClient) : CacheableData<YahooAuthConfig> {
     companion object {
         private val log = KotlinLogging.logger { }
         const val YAHOO_GET_TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token"
@@ -99,7 +98,7 @@ class YahooAuthService : CacheableData<YahooAuthConfig> {
     @OptIn(ExperimentalEncodingApi::class, InternalAPI::class)
     private fun getYahooAccessToken(c: YahooAuthConfig, formData: FormDataContent): String {
         return runBlocking {
-            val response: HttpResponse = HttpClient(CIO).request(YAHOO_GET_TOKEN_URL) {
+            val response: HttpResponse = client.request(YAHOO_GET_TOKEN_URL) {
                 method = HttpMethod.Post
                 headers {
                     append(

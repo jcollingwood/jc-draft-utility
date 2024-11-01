@@ -1,5 +1,6 @@
 package jc.draft.utility.league
 
+import io.ktor.client.HttpClient
 import jc.draft.utility.CacheableData
 import jc.draft.utility.league.espn.EspnFantasyPlatform
 import jc.draft.utility.league.espn.bfflLeague
@@ -7,6 +8,7 @@ import jc.draft.utility.league.espn.clayLeague
 import jc.draft.utility.league.espn.federationLeague
 import jc.draft.utility.league.espn.workLeague
 import jc.draft.utility.league.sleeper.SleeperFantasyPlatform
+import jc.draft.utility.league.sleeper.SleeperPlayerService
 import jc.draft.utility.league.sleeper.bellmanLeague
 import jc.draft.utility.league.sleeper.famanticsLeague
 import jc.draft.utility.league.sleeper.ffbCardsLeague
@@ -54,11 +56,17 @@ enum class Status(val displayValue: String) {
     Unknown("???")
 }
 
-fun fantasyPlatformFactory(leaguePlatform: LeaguePlatform): FantasyPlatform<*> {
-    return when (leaguePlatform) {
-        LeaguePlatform.ESPN -> EspnFantasyPlatform()
-        LeaguePlatform.SLEEPER -> SleeperFantasyPlatform()
-        LeaguePlatform.YAHOO -> YahooFantasyPlatform()
+class FantasyPlatformFactory(val httpClient: HttpClient, val sleeperPlayerService: SleeperPlayerService) {
+    fun getPlatform(leaguePlatform: LeaguePlatform): FantasyPlatform<*> {
+        return when (leaguePlatform) {
+            LeaguePlatform.ESPN -> EspnFantasyPlatform(httpClient)
+            LeaguePlatform.SLEEPER -> SleeperFantasyPlatform(
+                httpClient = httpClient,
+                sleeperPlayers = sleeperPlayerService.getPlayers()
+            )
+
+            LeaguePlatform.YAHOO -> YahooFantasyPlatform(httpClient)
+        }
     }
 }
 

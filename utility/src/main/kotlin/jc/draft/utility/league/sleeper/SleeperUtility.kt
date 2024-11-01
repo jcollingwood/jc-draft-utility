@@ -1,5 +1,6 @@
 package jc.draft.utility.league.sleeper
 
+import io.ktor.client.HttpClient
 import io.ktor.client.request.request
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -9,8 +10,6 @@ import jc.draft.utility.CacheDataType
 import jc.draft.utility.CacheableData
 import jc.draft.utility.league.Position
 import jc.draft.utility.league.Status
-import jc.draft.utility.league.client
-import jc.draft.utility.league.jsonParser
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -65,19 +64,10 @@ fun getSleeperStatus(status: String?): Status {
 
 data class SleeperConfig(val id: String?)
 
-fun getSleeperPlayers(fetchNew: Boolean = false): Map<String, SleeperPlayer>? {
-    return jsonParser.decodeFromString<Map<String, SleeperPlayer>>(
-        SleeperPlayersData().getData(
-            c = SleeperConfig("1"),
-            fetchNew = fetchNew
-        )
-    )
-}
-
 /**
  * Sleeper is public and readonly so no auth needed
  */
-class SleeperPlayersData : CacheableData<SleeperConfig> {
+class SleeperPlayersData(private val client: HttpClient) : CacheableData<SleeperConfig> {
     override fun directory(c: SleeperConfig): String {
         return "sleeper/players"
     }

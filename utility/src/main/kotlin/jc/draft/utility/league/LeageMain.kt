@@ -1,13 +1,22 @@
 package jc.draft.utility.league
 
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import jc.draft.utility.league.sleeper.SleeperPlayerService
 import mu.two.KotlinLogging
 
 val log = KotlinLogging.logger {}
 
 fun main() {
+    val client = HttpClient(CIO)
+    val sleeperPlayerService = SleeperPlayerService(client)
+    val platformFactory = FantasyPlatformFactory(
+        httpClient = client,
+        sleeperPlayerService = sleeperPlayerService
+    )
 
     val fantasyLeaguePlayers = fantasyLeagues
-        .map { league -> fantasyPlatformFactory(league.leaguePlatform).getLeaguePlayers(league) }
+        .map { league -> platformFactory.getPlatform(league.leaguePlatform).getLeaguePlayers(league) }
 
     log.info("\nFantasy League Rosters:\n")
 
