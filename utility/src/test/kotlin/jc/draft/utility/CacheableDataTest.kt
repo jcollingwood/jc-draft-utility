@@ -2,6 +2,12 @@ package jc.draft.utility
 
 import jc.draft.utility.data.entities.CachedData
 import jc.draft.utility.data.entities.CachedDataEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
@@ -125,6 +131,30 @@ CREATE TABLE IF NOT EXISTS "cached_data" (
         transaction {
             val cachedData = CachedDataEntity.find { CachedData.dataKey eq testKey }
             assertEquals(2, cachedData.count())
+        }
+    }
+
+    @Test
+    fun `test cacheable data interface handles concurrent requests to same service and only performs single fetch`() {
+        val testService = TestDataService()
+        val numberConcurrent = 10
+
+        var data: List<String> = emptyList()
+        // trigger many fetches at same time
+        runBlocking {
+            val scope = CoroutineScope(Dispatchers.IO).launch() {
+                data = (1..numberConcurrent).map { async { testService.lockedGetData(testKey, false) } }.awaitAll()
+            }
+            scope.join()
+        }
+
+        assertEquals(numberConcurrent, data.size)
+        data.forEach { assertEquals(testJson, it) }
+
+        // validate persisted data matches expected, only 1 should be persisted
+        transaction {
+            val cachedData = CachedDataEntity.find { CachedData.dataKey eq testKey }
+            assertEquals(1, cachedData.count())
         }
     }
 

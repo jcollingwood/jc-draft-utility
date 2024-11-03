@@ -26,14 +26,20 @@ fun getEspnStatus(status: String?): Status {
         "QUESTIONABLE" -> Status.Questionable
         "OUT" -> Status.Out
         "PUP" -> Status.PUP
+        "INJURY_RESERVE",
         "IR" -> Status.IR
+
         else -> {
-            log.debug("unknown espn status: $status")
+            log.warn("unknown espn status: $status")
             Status.Unknown
         }
     }
 }
 
+/**
+ * 20 = bench?
+ * 21 = IR?
+ */
 fun isStartingLineupSlotId(lineupSlotId: Integer): Boolean {
     return !listOf(20, 21).contains(lineupSlotId.toInt())
 }

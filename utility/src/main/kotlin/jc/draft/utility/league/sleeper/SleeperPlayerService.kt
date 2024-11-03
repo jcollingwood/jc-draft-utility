@@ -8,9 +8,8 @@ class SleeperPlayerService(
     private val sleeperPlayersData: SleeperPlayersData = SleeperPlayersData(httpClient)
 ) {
     fun getPlayers(fetchNew: Boolean = false): Map<String, SleeperPlayer>? {
-        // TODO add locking logic here to prevent multiple threads from triggering refresh
         return jsonParser.decodeFromString<Map<String, SleeperPlayer>>(
-            sleeperPlayersData.getData(
+            sleeperPlayersData.lockedGetData(
                 c = SleeperConfig("1"),
                 fetchNew = fetchNew
             )

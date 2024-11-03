@@ -71,6 +71,7 @@ class FantasyPlatformFactory(val httpClient: HttpClient, val sleeperPlayerServic
 }
 
 data class LeagueConfig(
+    val id: Int,
     val leaguePlatform: LeaguePlatform,
     val leagueName: String,
     val leagueId: String,

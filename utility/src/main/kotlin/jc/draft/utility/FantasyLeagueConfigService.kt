@@ -9,14 +9,27 @@ class FantasyLeagueConfigService {
     fun getLeagues(): List<LeagueConfig> {
         return transaction {
             return@transaction FantasyLeagueEntity.all().map {
-                LeagueConfig(
-                    leaguePlatform = LeaguePlatform.valueOf(it.leaguePlatform),
-                    year = it.year,
-                    leagueName = it.leagueName,
-                    leagueId = it.leagueId,
-                    teamId = it.teamId
-                )
+                mapEntityToLeagueConfig(it)
             }
         }
+    }
+
+    fun getLeagueById(id: Int): LeagueConfig? {
+        return transaction {
+            return@transaction FantasyLeagueEntity.findById(id)?.let {
+                mapEntityToLeagueConfig(it)
+            }
+        }
+    }
+
+    private fun mapEntityToLeagueConfig(entity: FantasyLeagueEntity): LeagueConfig {
+        return LeagueConfig(
+            id = entity.id.value,
+            leaguePlatform = LeaguePlatform.valueOf(entity.leaguePlatform),
+            year = entity.year,
+            leagueName = entity.leagueName,
+            leagueId = entity.leagueId,
+            teamId = entity.teamId
+        )
     }
 }

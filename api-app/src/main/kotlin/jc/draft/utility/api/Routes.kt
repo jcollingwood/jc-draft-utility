@@ -56,22 +56,24 @@ fun Application.configureRouting(httpClient: HttpClient) {
                                 )
                             rostersBody(
                                 leagueConfigService = leagueConfigService,
-                                sleeperPlayerService = sleeperPlayerService
                             )
                         }
                     }
                 }
             }
-            get("/leagues/{leagueName}") {
+            get("/leagues/{leagueId}") {
                 val userSession: UserSession? = authenticate(call)
                 if (userSession == null) return@get
 
                 var refetchPlayers = call.request.queryParameters["refetchPlayers"]?.toBoolean() == true
                 var fetchNew = call.request.queryParameters["fetchNew"]?.toBoolean() == true
-                val leagueName = call.parameters["leagueName"]
+                val leagueId = call.parameters["leagueId"]?.toInt()
 
                 // missing league name
-                if (leagueName == null) call.respondHtml(HttpStatusCode.BadRequest) { body { p("Invalid league name") } }
+                if (leagueId == null) {
+                    call.respondHtml(HttpStatusCode.BadRequest) { body { p("Missing league id parameter") } }
+                    return@get
+                }
 
                 if (refetchPlayers) sleeperPlayerService.getPlayers(true)
 
@@ -80,7 +82,7 @@ fun Application.configureRouting(httpClient: HttpClient) {
                         leagueSection(
                             leagueConfigService = leagueConfigService,
                             leagueService = leagueService,
-                            leagueName = leagueName.toString(),
+                            leagueId = leagueId,
                             fetchNew = fetchNew,
                         )
                     }

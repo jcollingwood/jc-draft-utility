@@ -2,10 +2,11 @@ package jc.draft.utility
 
 import jc.draft.utility.data.entities.CachedData
 import jc.draft.utility.data.entities.CachedDataEntity
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.two.KotlinLogging
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -22,6 +23,7 @@ enum class CacheDataType(val extension: String) {
 interface CacheableData<C> {
     companion object {
         private val log = KotlinLogging.logger {}
+        private val mutex = Mutex()
     }
 
     fun directory(c: C): String
@@ -29,6 +31,9 @@ interface CacheableData<C> {
         return CacheDataType.TXT
     }
 
+    /**
+     * get data logic, handling cache retrieval, refresh, and initial fetch lifecycle
+     */
     fun getData(c: C, fetchNew: Boolean = false): String {
         val existingDataCache = if (fetchNew) null else getLatestData(c)
 
@@ -52,6 +57,13 @@ interface CacheableData<C> {
     }
 
     /**
+     * ensures only single get data triggered at a time
+     */
+    fun lockedGetData(c: C, fetchNew: Boolean = false): String {
+        return runBlocking { mutex.withLock { getData(c, fetchNew) } }
+    }
+
+    /**
      * optionally override behavior to fetch data for first time differently, defaults to normal fetch behavior
      */
     fun refreshDataFirstTime(c: C): String {
@@ -63,7 +75,6 @@ interface CacheableData<C> {
     fun refreshAndPersistNewFile(refreshFunc: (C) -> String, c: C): String {
         val data = refreshFunc(c)
         transaction {
-            addLogger(StdOutSqlLogger)
             CachedDataEntity.new {
                 dataType = dataType().name
                 timestamp = LocalDateTime.now()

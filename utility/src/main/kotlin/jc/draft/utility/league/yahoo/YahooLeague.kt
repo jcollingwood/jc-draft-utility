@@ -25,7 +25,8 @@ val ramLeague = LeagueConfig(
     leaguePlatform = LeaguePlatform.YAHOO,
     leagueName = "Ram",
     leagueId = "426660",
-    teamId = "3"
+    teamId = "3",
+    id = 0
 )
 
 // jackson xml mapper config for kotlin

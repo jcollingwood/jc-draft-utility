@@ -6,7 +6,6 @@ import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
 import jc.draft.utility.league.LeaguePlatform
 import jc.draft.utility.league.Status
-import jc.draft.utility.league.sleeper.SleeperPlayerService
 import jc.draft.utility.league.yahoo.YAHOO_AUTH_CONFIG
 import kotlinx.html.FlowContent
 import kotlinx.html.UL
@@ -25,13 +24,8 @@ import kotlinx.html.ul
 
 fun FlowContent.rostersBody(
     leagueConfigService: FantasyLeagueConfigService,
-    sleeperPlayerService: SleeperPlayerService
 ): Unit {
     val leagues = leagueConfigService.getLeagues()
-    val leagueNames = leagues.map { it.leagueName }
-    // trigger player load/fetch once before multiple sleeper leagues can trigger multiple loads
-    if (leagues.any { it.leaguePlatform == LeaguePlatform.SLEEPER })
-        sleeperPlayerService.getPlayers()
 
     span {
         h1 {
@@ -41,15 +35,15 @@ fun FlowContent.rostersBody(
     }
     div {
         classes = setOf("grid", "grid-cols-1", "sm:grid-cols-2", "md:grid-cols-3", "gap-4")
-        leagueNames.map {
+        leagues.map {
             section {
-                id = "league-$it"
+                id = "league-${it.id}"
                 classes = setOf("flex", "flex-col")
                 hxTrigger("load")
-                hxGet("/rosters/leagues/$it")
+                hxGet("/rosters/leagues/${it.id}")
                 hxSwap("innerHTML")
 
-                leagueSectionLoading(it)
+                leagueSectionLoading(it.leagueName)
             }
         }
     }
@@ -58,33 +52,33 @@ fun FlowContent.rostersBody(
 fun FlowContent.leagueSection(
     leagueConfigService: FantasyLeagueConfigService,
     leagueService: LeagueService,
-    leagueName: String,
+    leagueId: Int,
     fetchNew: Boolean
 ) {
-    val leagueConfig = leagueConfigService.getLeagues().find { leagueName == it.leagueName }
+    val leagueConfig = leagueConfigService.getLeagueById(leagueId)
 
-    leagueConfig?.let { league ->
-        val leaguePlayers = leagueService.getLeagueRoster(
-            leagueConfig = league,
-            fetchNew = fetchNew
-        )
+    if (leagueConfig == null) return p("League not found with id: $leagueId")
 
-        div {
-            classes = setOf("mb-4", "flex", "flex-col", "gap-2")
-            leagueSectionHeader(league)
-            leagueHeaderButtons(league)
-        }
-        if (leaguePlayers.players.isNotEmpty()) {
-            ul {
-                classes = setOf("gap-2")
-                leaguePlayers.players.map { player ->
-                    leaguePlayer(player)
-                }
+    val leaguePlayers = leagueService.getLeagueRoster(
+        leagueConfig = leagueConfig,
+        fetchNew = fetchNew
+    )
+
+    div {
+        classes = setOf("mb-4", "flex", "flex-col", "gap-2")
+        leagueSectionHeader(leagueConfig)
+        leagueHeaderButtons(leagueConfig)
+    }
+    if (leaguePlayers.players.isNotEmpty()) {
+        ul {
+            classes = setOf("gap-2")
+            leaguePlayers.players.map { player ->
+                leaguePlayer(player)
             }
-        } else {
-            configureLeague(league)
         }
-    } ?: p("Invalid league name: $leagueName")
+    } else {
+        configureLeague(leagueConfig)
+    }
 }
 
 fun FlowContent.leagueSectionHeader(league: LeagueConfig) {
@@ -103,7 +97,6 @@ fun FlowContent.leagueSectionHeader(league: LeagueConfig) {
 }
 
 fun FlowContent.leagueHeaderButtons(league: LeagueConfig) {
-    val leagueName = league.leagueName
     div {
         classes = setOf("flex", "gap-3")
         var leagueButtonClasses = setOf(
@@ -123,8 +116,8 @@ fun FlowContent.leagueHeaderButtons(league: LeagueConfig) {
         // primary button to refetch league player data
         button {
             hxTrigger("click")
-            hxGet("/rosters/leagues/$leagueName?fetchNew=true")
-            hxTarget("#league-$leagueName")
+            hxGet("/rosters/leagues/${league.id}?fetchNew=true")
+            hxTarget("#league-${league.id}")
 
             classes = leagueButtonClasses + setOf(
                 "outline-green-300",
@@ -137,8 +130,8 @@ fun FlowContent.leagueHeaderButtons(league: LeagueConfig) {
         if (league.leaguePlatform == LeaguePlatform.SLEEPER) {
             button {
                 hxTrigger("click")
-                hxGet("/rosters/leagues/$leagueName?refetchPlayers=true&fetchNew=true")
-                hxTarget("#league-$leagueName")
+                hxGet("/rosters/leagues/${league.id}?refetchPlayers=true&fetchNew=true")
+                hxTarget("#league-${league.id}")
 
                 classes = leagueButtonClasses + setOf(
                     "outline-yellow-300",

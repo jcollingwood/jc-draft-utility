@@ -51,7 +51,7 @@ class YahooAuthService(val client: HttpClient) : CacheableData<YahooAuthConfig> 
     }
 
     fun getYahooAccessToken(): OauthResponse {
-        return parseAuthData(getData(YAHOO_AUTH_CONFIG))
+        return parseAuthData(lockedGetData(YAHOO_AUTH_CONFIG))
     }
 
     override fun directory(c: YahooAuthConfig): String {
