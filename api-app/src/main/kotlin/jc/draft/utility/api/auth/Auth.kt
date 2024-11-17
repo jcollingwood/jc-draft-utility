@@ -1,6 +1,10 @@
 package jc.draft.utility.api.auth
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
@@ -19,10 +23,16 @@ import io.ktor.server.routing.routing
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.server.sessions.sessions
+import jc.draft.utility.CacheableData
+import jc.draft.utility.api.config.GOOGLE_CLIENT_ID
+import jc.draft.utility.api.config.GOOGLE_CLIENT_SECRET
 import jc.draft.utility.api.config.PORT
+import jc.draft.utility.league.jsonParser
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.p
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -94,8 +104,8 @@ fun Application.authModule(httpClient: HttpClient) {
                     authorizeUrl = "https://accounts.google.com/o/oauth2/auth",
                     accessTokenUrl = "https://accounts.google.com/o/oauth2/token",
                     requestMethod = HttpMethod.Post,
-                    clientId = System.getenv("GOOGLE_CLIENT_ID"),
-                    clientSecret = System.getenv("GOOGLE_CLIENT_SECRET"),
+                    clientId = GOOGLE_CLIENT_ID,
+                    clientSecret = GOOGLE_CLIENT_SECRET,
                     defaultScopes = listOf("https://www.googleapis.com/auth/userinfo.profile"),
                     extraAuthParameters = listOf("access_type" to "offline"),
                     onStateCreated = { call, state ->
@@ -110,4 +120,45 @@ fun Application.authModule(httpClient: HttpClient) {
         }
     }
     authRouting()
+}
+
+@Serializable
+data class UserInfo(
+    val id: String,
+    val name: String,
+    @SerialName("given_name")
+    val givenName: String,
+    @SerialName("family_name")
+    val familyName: String,
+    val picture: String
+)
+
+class UserInfoService(
+    val client: HttpClient,
+    val userInfoCacheService: CacheableData<UserSession> = UserInfoCacheService(client)
+) {
+    fun getUserInfo(userSession: UserSession): UserInfo {
+        return jsonParser.decodeFromString<UserInfo>(userInfoCacheService.lockedGetData(userSession))
+    }
+}
+
+class UserInfoCacheService(val client: HttpClient) : CacheableData<UserSession> {
+    override fun directory(c: UserSession): String {
+        return c.token
+    }
+
+    override fun refreshDurationHours(): Long {
+        return 1
+    }
+
+    override fun refreshData(c: UserSession, existingData: String): String {
+        return runBlocking {
+            client.get("https://www.googleapis.com/oauth2/v2/userinfo") {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer ${c.token}")
+                }
+                // TODO add 401 redirect to reauth logic
+            }.bodyAsText()
+        }
+    }
 }

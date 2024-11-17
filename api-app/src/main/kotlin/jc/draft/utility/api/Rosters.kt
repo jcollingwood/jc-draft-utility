@@ -1,6 +1,7 @@
 package jc.draft.utility.api
 
 import jc.draft.utility.FantasyLeagueConfigService
+import jc.draft.utility.api.auth.UserInfo
 import jc.draft.utility.api.rosters.LeagueService
 import jc.draft.utility.league.FantasyPlayer
 import jc.draft.utility.league.LeagueConfig
@@ -23,14 +24,21 @@ import kotlinx.html.span
 import kotlinx.html.ul
 
 fun FlowContent.rostersBody(
+    userInfo: UserInfo,
     leagueConfigService: FantasyLeagueConfigService,
-): Unit {
+) {
     val leagues = leagueConfigService.getLeagues()
 
     span {
+        classes = setOf("flex", "flex-row", "gap-4", "items-center", "mb-4")
+
         h1 {
-            classes = setOf("font-medium", "text-lg", "mb-4")
+            classes = setOf("font-medium", "text-lg")
             +"Fantasy Rosters"
+        }
+        p {
+            classes = setOf("text-sm", "text-gray-500")
+            +"logged in as ${userInfo.name}"
         }
     }
     div {

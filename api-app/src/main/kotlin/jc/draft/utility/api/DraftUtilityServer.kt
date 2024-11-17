@@ -11,6 +11,7 @@ import jc.draft.utility.api.auth.authModule
 import jc.draft.utility.api.config.PORT
 
 fun Application.appModule(httpClient: HttpClient) {
+    errorHandler()
     configureDatabase()
     configureRouting(httpClient)
 }

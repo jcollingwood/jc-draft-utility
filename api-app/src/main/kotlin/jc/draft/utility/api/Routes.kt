@@ -10,6 +10,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import jc.draft.utility.FantasyLeagueConfigService
+import jc.draft.utility.api.auth.UserInfoService
 import jc.draft.utility.api.auth.UserSession
 import jc.draft.utility.api.auth.authenticate
 import jc.draft.utility.api.rosters.LeagueService
@@ -25,6 +26,7 @@ import kotlin.text.toBoolean
 
 fun Application.configureRouting(httpClient: HttpClient) {
     /* services init */
+    val userInfoService = UserInfoService(httpClient)
     val leagueConfigService = FantasyLeagueConfigService()
     val sleeperPlayerService = SleeperPlayerService(httpClient)
     val leagueService = LeagueService(
@@ -40,6 +42,7 @@ fun Application.configureRouting(httpClient: HttpClient) {
             get {
                 val userSession: UserSession? = authenticate(call)
                 if (userSession == null) return@get
+                val userInfo = userInfoService.getUserInfo(userSession)
 
                 call.respondHtml {
                     head {
@@ -55,6 +58,7 @@ fun Application.configureRouting(httpClient: HttpClient) {
                                     "font-inter", "flex", "flex-col", "h-full", "w-screen", "items-center", "p-4"
                                 )
                             rostersBody(
+                                userInfo = userInfo,
                                 leagueConfigService = leagueConfigService,
                             )
                         }

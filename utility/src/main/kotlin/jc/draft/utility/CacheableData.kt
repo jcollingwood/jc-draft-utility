@@ -57,7 +57,7 @@ interface CacheableData<C> {
     }
 
     /**
-     * ensures only single get data triggered at a time
+     * ensures only single get data triggered at a time, useful for shared data that would be access concurrently
      */
     fun lockedGetData(c: C, fetchNew: Boolean = false): String {
         return runBlocking { mutex.withLock { getData(c, fetchNew) } }
