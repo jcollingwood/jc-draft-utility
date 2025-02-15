@@ -6,6 +6,7 @@ import io.ktor.client.request.headers
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.application.install
@@ -17,7 +18,6 @@ import io.ktor.server.auth.oauth
 import io.ktor.server.auth.principal
 import io.ktor.server.html.respondHtml
 import io.ktor.server.response.respondRedirect
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.sessions.Sessions
@@ -34,14 +34,15 @@ import kotlinx.html.body
 import kotlinx.html.p
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import mu.two.KotlinLogging
 
 @Serializable
 data class UserSession(val state: String, val token: String)
 
-val OAUTH_KEY = "auth-oauth-google"
+const val OAUTH_KEY = "auth-oauth-google"
 
 // TODO understand cookie stuff better
-val SESSION_COOKIE_KEY = "sesh"
+const val SESSION_COOKIE_KEY = "sesh"
 
 // TODO externalize domain
 val ROOT_DOMAIN = "http://localhost:${PORT}"
@@ -61,12 +62,7 @@ fun Application.authRouting() {
                 }
             }
         }
-        get("/home") {
-            val userSession: UserSession? = authenticate(call)
-            if (userSession == null) return@get
-            call.respondText("Token ${userSession.token}, state ${userSession.state}")
-        }
-        authenticate("auth-oauth-google") {
+        authenticate(OAUTH_KEY) {
             get("/login") {
                 // Redirects to 'authorizeUrl' automatically
             }
@@ -84,7 +80,7 @@ fun Application.authRouting() {
                         }
                     }
                 }
-                call.respondRedirect("/home")
+                call.respondRedirect("/rosters")
             }
         }
     }
@@ -143,6 +139,10 @@ class UserInfoService(
 }
 
 class UserInfoCacheService(val client: HttpClient) : CacheableData<UserSession> {
+    companion object {
+        val log = KotlinLogging.logger {}
+    }
+
     override fun directory(c: UserSession): String {
         return c.token
     }
@@ -153,12 +153,18 @@ class UserInfoCacheService(val client: HttpClient) : CacheableData<UserSession> 
 
     override fun refreshData(c: UserSession, existingData: String): String {
         return runBlocking {
-            client.get("https://www.googleapis.com/oauth2/v2/userinfo") {
+            val response = client.get("https://www.googleapis.com/oauth2/v2/userinfo") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer ${c.token}")
                 }
-                // TODO add 401 redirect to reauth logic
-            }.bodyAsText()
+            }
+
+            if (response.status != HttpStatusCode.OK) {
+                log.debug("failed to retrieve user info. status: ${response.status}")
+                throw UserAuthError()
+            }
+
+            return@runBlocking response.bodyAsText()
         }
     }
 }

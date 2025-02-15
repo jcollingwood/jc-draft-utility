@@ -42,12 +42,13 @@ dependencies {
 node {
     // need to set download=true unless you want to use locally installed node
     download.set(true)
-    version.set("22.9.0")
+    version.set("23.8.0")
 }
 
 // tailwind task crawls source kt files and generates styles.css with necessary css classes
 tasks.register<NpxTask>("tailwind") {
-    command.set("tailwindcss")
+    // tailwind version 4+ broke this build task... figure out at some point
+    command.set("tailwindcss@3.4.17")
     args.addAll("-o", "src/main/resources/static/styles.css")
 }
 

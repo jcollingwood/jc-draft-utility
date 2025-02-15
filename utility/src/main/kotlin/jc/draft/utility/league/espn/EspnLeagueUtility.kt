@@ -26,6 +26,7 @@ fun getEspnStatus(status: String?): Status {
         "QUESTIONABLE" -> Status.Questionable
         "OUT" -> Status.Out
         "PUP" -> Status.PUP
+        "DOUBTFUL" -> Status.Doubtful
         "INJURY_RESERVE",
         "IR" -> Status.IR
 

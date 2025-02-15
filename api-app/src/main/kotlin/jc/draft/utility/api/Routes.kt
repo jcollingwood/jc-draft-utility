@@ -12,7 +12,7 @@ import io.ktor.server.routing.routing
 import jc.draft.utility.FantasyLeagueConfigService
 import jc.draft.utility.api.auth.UserInfoService
 import jc.draft.utility.api.auth.UserSession
-import jc.draft.utility.api.auth.authenticate
+import jc.draft.utility.api.auth.getUserSession
 import jc.draft.utility.api.rosters.LeagueService
 import jc.draft.utility.league.sleeper.SleeperPlayerService
 import kotlinx.html.body
@@ -38,9 +38,10 @@ fun Application.configureRouting(httpClient: HttpClient) {
         // static directory route relative to project root dir, should pull in tailwind css
         staticFiles("/static", File("api-app/src/main/resources/static"))
 
+//        authenticate(OAUTH_KEY) {
         route("/rosters") {
             get {
-                val userSession: UserSession? = authenticate(call)
+                val userSession: UserSession? = getUserSession(call)
                 if (userSession == null) return@get
                 val userInfo = userInfoService.getUserInfo(userSession)
 
@@ -66,7 +67,7 @@ fun Application.configureRouting(httpClient: HttpClient) {
                 }
             }
             get("/leagues/{leagueId}") {
-                val userSession: UserSession? = authenticate(call)
+                val userSession: UserSession? = getUserSession(call)
                 if (userSession == null) return@get
 
                 var refetchPlayers = call.request.queryParameters["refetchPlayers"]?.toBoolean() == true
@@ -92,6 +93,7 @@ fun Application.configureRouting(httpClient: HttpClient) {
                     }
                 }
             }
+//            }
         }
     }
 }
